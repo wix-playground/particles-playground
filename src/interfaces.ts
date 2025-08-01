@@ -22,6 +22,18 @@ export interface Particle extends Coordinates {
   reachedTarget?: boolean;
 }
 
+export interface BubbleParticle {
+  x: number;
+  y: number;
+  dx: number;
+  dy: number;
+  radius: number;
+  color: string;
+  opacity: number;
+  createdAt: number; // Time when bubble was created
+  lifetime: number; // How long the bubble should live (in ms)
+}
+
 export type StartPositionType =
   | 'top-left'
   | 'top-right'
