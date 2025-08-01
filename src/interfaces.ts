@@ -60,6 +60,7 @@ export type FontState = {
   italic: boolean;
   weight: number;
   letterSpacing: number; // number in px
+  textColor: string;
 };
 
 export const getUpdateFontMessage = (payload: FontState) => ({

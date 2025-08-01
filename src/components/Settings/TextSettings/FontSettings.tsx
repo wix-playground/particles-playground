@@ -100,6 +100,11 @@ export const FontSettings = () => {
     setFontState({letterSpacing: Number(e.target.value)});
   };
 
+  // Handle text color change
+  const handleTextColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFontState({textColor: e.target.value});
+  };
+
   if (!fontState) {
     return;
   }
@@ -177,6 +182,17 @@ export const FontSettings = () => {
           step="0.1"
           min="-5"
           max="20"
+        />
+      </div>
+
+      <div className="setting-group">
+        <label htmlFor="text-color">Text Color:</label>
+        <input
+          data-testid={DATA_TEST_IDS.TEXT_COLOR_INPUT}
+          type="color"
+          id="text-color"
+          value={fontState.textColor}
+          onChange={handleTextColorChange}
         />
       </div>
     </div>

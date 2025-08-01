@@ -5,17 +5,16 @@ export const DEFAULT_ANIMATION_DURATION = 3000; // 3 seconds in milliseconds
 export const DEFAULT_ENABLE_BUBBLES = false; // Default setting for bubble emission
 export const DEFAULT_START_POSITION: StartPositionType = 'random';
 export const DEFAULT_MOVEMENT_FUNCTION_KEY = 'DEV_EXAMPLE';
-export const DEFAULT_DARK_THEME_COLOR = '#FFFFFF';
-export const DEFAULT_LIGHT_THEME_COLOR = '#213547';
 export const DEFAULT_PARTICLES_TEXT = 'WIX 🤠';
 export const DEFAULT_PARTICLE_COLOR = '#ffffff';
 export const DEFAULT_PARTICLE_COLORS = ['#ff0000', '#00ff00', '#0000ff'];
 export const DEFAULT_FONT_STATE: FontState = {
     fontFamily: 'Arial',
     fontSize: 90,
-    italic: true,
+    italic: false,
     weight: 400,
     letterSpacing: 0,
+    textColor: DEFAULT_PARTICLE_COLOR,
 }
 
 export const COPY_AI_PROMPT_TEXT = 'Copy AI prompt';
@@ -102,6 +101,7 @@ export const DATA_TEST_IDS = {
     LETTER_SPACING_INPUT: 'letter-spacing-input',
     FONT_ITALIC_CHECKBOX: 'font-italic-checkbox',
     TEXT_INPUT: 'text-input',
+    TEXT_COLOR_INPUT: 'text-color-input',
 }
 
 export const BUBBLE_PARTICLE_LIFETIME = 1300

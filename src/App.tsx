@@ -51,6 +51,7 @@ const App = () => {
     text: appProps?.text ?? '',
     font: getFontString(appProps?.font ?? DEFAULT_FONT_STATE),
     letterSpacing: appProps?.font ? appProps.font.letterSpacing : 0,
+    textColor: appProps?.font ? appProps.font.textColor : DEFAULT_FONT_STATE.textColor,
     fontLoaded,
   });
 
