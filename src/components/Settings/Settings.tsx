@@ -12,6 +12,7 @@ import {ElasticPlopSettings} from './ElasticPlopSettings';
 import {TextSettings} from './TextSettings';
 import {AnimationDurationSlider} from './AnimationDurationSlider';
 import {BubbleEffectToggle} from './BubbleEffectToggle';
+import {ImageParticleToggle} from './ImageParticleToggle';
 
 export const Settings = ({
   editorRef,
@@ -58,6 +59,7 @@ export const Settings = ({
             }}
           />
           <BubbleEffectToggle />
+          <ImageParticleToggle />
         </div>
         <MultiColorPicker />
         <StartPosition />

@@ -8,6 +8,7 @@ import {
   DEFAULT_START_POSITION,
   DEFAULT_ANIMATION_DURATION,
   DEFAULT_ENABLE_BUBBLES,
+  DEFAULT_ENABLE_IMAGE_PARTICLES,
   BUBBLE_PARTICLE_LIFETIME,
 } from './constants';
 import {
@@ -59,6 +60,7 @@ const defaultAppProps: AppProps = {
   particleColors: DEFAULT_PARTICLE_COLORS,
   animationDuration: DEFAULT_ANIMATION_DURATION,
   enableBubbles: DEFAULT_ENABLE_BUBBLES,
+  enableImageParticles: DEFAULT_ENABLE_IMAGE_PARTICLES,
 };
 
 const workerState: {
@@ -322,49 +324,10 @@ const renderParticles = (
       workerState.appProps.animationDuration
     );
 
-    const blendFactor = getTransitionBlendFactor(particle, workerState.revealProgress);
-
-    if (blendFactor > 0 && blendFactor < 1) {
-      // Blending mode: draw both circle and image with appropriate opacities
-      const radius = Math.floor(
-        workerState.appProps.particleRadius * (particle.scale || 1)
-      );
-
-      // Draw circle with reduced opacity
-      workerState.frameContext!.globalAlpha = (particle.opacity || 1) * (1 - blendFactor);
-      workerState.frameContext!.beginPath();
-      workerState.frameContext!.arc(
-        Math.floor(particle.x) + radius / 2,
-        Math.floor(particle.y) + radius / 2,
-        radius / 2,
-        0,
-        2 * Math.PI
-      );
-      workerState.frameContext!.fillStyle = workerState.appProps.particleColors
-        .length
-        ? getColorFromProgress(
-          workerState.appProps.particleColors,
-          workerState.revealProgress
-        )
-        : particle.color;
-      workerState.frameContext!.fill();
-
-      // Draw image with increasing opacity
-      workerState.frameContext!.globalAlpha = blendFactor;
-      workerState.frameContext!.drawImage(
-        workerState.imageBitmap!,
-        particle.targetX,
-        particle.targetY,
-        workerState.appProps.particleRadius,
-        workerState.appProps.particleRadius,
-        Math.floor(particle.x),
-        Math.floor(particle.y),
-        workerState.appProps.particleRadius,
-        workerState.appProps.particleRadius
-      );
-    } else if (blendFactor >= 1) {
-      // Fully image
-      workerState.frameContext!.globalAlpha = 1;
+    // Check if image particles mode is enabled
+    if (workerState.appProps.enableImageParticles) {
+      // Always render as image bitmap throughout animation
+      workerState.frameContext!.globalAlpha = particle.opacity || 1;
       workerState.frameContext!.drawImage(
         workerState.imageBitmap!,
         particle.targetX,
@@ -377,28 +340,84 @@ const renderParticles = (
         workerState.appProps.particleRadius
       );
     } else {
-      // Fully circle
-      const radius = Math.floor(
-        workerState.appProps.particleRadius * (particle.scale || 1)
-      );
+      const blendFactor = getTransitionBlendFactor(particle, workerState.revealProgress);
 
-      workerState.frameContext!.globalAlpha = particle.opacity || 1;
-      workerState.frameContext!.beginPath();
-      workerState.frameContext!.arc(
-        Math.floor(particle.x) + radius / 2,
-        Math.floor(particle.y) + radius / 2,
-        radius / 2,
-        0,
-        2 * Math.PI
-      );
-      workerState.frameContext!.fillStyle = workerState.appProps.particleColors
-        .length
-        ? getColorFromProgress(
-          workerState.appProps.particleColors,
-          workerState.revealProgress
-        )
-        : particle.color;
-      workerState.frameContext!.fill();
+      if (blendFactor > 0 && blendFactor < 1) {
+        // Blending mode: draw both circle and image with appropriate opacities
+        const radius = Math.floor(
+          workerState.appProps.particleRadius * (particle.scale || 1)
+        );
+
+        // Draw circle with reduced opacity
+        workerState.frameContext!.globalAlpha = (particle.opacity || 1) * (1 - blendFactor);
+        workerState.frameContext!.beginPath();
+        workerState.frameContext!.arc(
+          Math.floor(particle.x) + radius / 2,
+          Math.floor(particle.y) + radius / 2,
+          radius / 2,
+          0,
+          2 * Math.PI
+        );
+        workerState.frameContext!.fillStyle = workerState.appProps.particleColors
+          .length
+          ? getColorFromProgress(
+            workerState.appProps.particleColors,
+            workerState.revealProgress
+          )
+          : particle.color;
+        workerState.frameContext!.fill();
+
+        // Draw image with increasing opacity
+        workerState.frameContext!.globalAlpha = blendFactor;
+        workerState.frameContext!.drawImage(
+          workerState.imageBitmap!,
+          particle.targetX,
+          particle.targetY,
+          workerState.appProps.particleRadius,
+          workerState.appProps.particleRadius,
+          Math.floor(particle.x),
+          Math.floor(particle.y),
+          workerState.appProps.particleRadius,
+          workerState.appProps.particleRadius
+        );
+      } else if (blendFactor >= 1) {
+        // Fully image
+        workerState.frameContext!.globalAlpha = 1;
+        workerState.frameContext!.drawImage(
+          workerState.imageBitmap!,
+          particle.targetX,
+          particle.targetY,
+          workerState.appProps.particleRadius,
+          workerState.appProps.particleRadius,
+          Math.floor(particle.x),
+          Math.floor(particle.y),
+          workerState.appProps.particleRadius,
+          workerState.appProps.particleRadius
+        );
+      } else {
+        // Fully circle
+        const radius = Math.floor(
+          workerState.appProps.particleRadius * (particle.scale || 1)
+        );
+
+        workerState.frameContext!.globalAlpha = particle.opacity || 1;
+        workerState.frameContext!.beginPath();
+        workerState.frameContext!.arc(
+          Math.floor(particle.x) + radius / 2,
+          Math.floor(particle.y) + radius / 2,
+          radius / 2,
+          0,
+          2 * Math.PI
+        );
+        workerState.frameContext!.fillStyle = workerState.appProps.particleColors
+          .length
+          ? getColorFromProgress(
+            workerState.appProps.particleColors,
+            workerState.revealProgress
+          )
+          : particle.color;
+        workerState.frameContext!.fill();
+      }
     }
 
     if (!particle.emittedBubbles && workerState.appProps.enableBubbles && particle.x === particle.targetX && particle.y === particle.targetY) {
@@ -716,6 +735,15 @@ self.onmessage = (event: MessageEvent<MainThreadMessage>) => {
     }
     case Action.UPDATE_ENABLE_BUBBLES: {
       workerState.appProps.enableBubbles = payload;
+
+      self.postMessage({
+        type: WorkerAction.UPDATE_APP_PROPS,
+        data: workerState.appProps,
+      });
+      break;
+    }
+    case Action.UPDATE_ENABLE_IMAGE_PARTICLES: {
+      workerState.appProps.enableImageParticles = payload;
 
       self.postMessage({
         type: WorkerAction.UPDATE_APP_PROPS,

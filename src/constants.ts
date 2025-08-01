@@ -3,6 +3,7 @@ import {FontState, StartPositionType} from './interfaces';
 export const DEFAULT_PARTICLE_RADIUS = 5;
 export const DEFAULT_ANIMATION_DURATION = 3000; // 3 seconds in milliseconds
 export const DEFAULT_ENABLE_BUBBLES = false; // Default setting for bubble emission
+export const DEFAULT_ENABLE_IMAGE_PARTICLES = false; // Default setting for image particle rendering
 export const DEFAULT_START_POSITION: StartPositionType = 'random';
 export const DEFAULT_MOVEMENT_FUNCTION_KEY = 'DEV_EXAMPLE';
 export const DEFAULT_PARTICLES_TEXT = 'WIX 🤠';
