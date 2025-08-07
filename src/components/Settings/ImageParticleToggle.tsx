@@ -2,6 +2,7 @@ import {useCallback, useContext} from 'react';
 import {getUpdateEnableImageParticlesMessage} from '../../interfaces';
 import {WorkerContext} from '../../contexts/WorkerContext';
 import {AppContext} from '../../contexts/AppContext';
+import styles from './Settings.module.css';
 
 export const ImageParticleToggle = () => {
   const worker = useContext(WorkerContext);
@@ -19,17 +20,15 @@ export const ImageParticleToggle = () => {
   if (!appProps) return null;
 
   return (
-    <div className="settings-item">
-      <div className="settings-item-header">
-        <span>Image Particles</span>
-        <input
-          className="userInput"
-          type="checkbox"
-          id="image-particle-toggle"
-          checked={appProps.enableImageParticles}
-          onChange={handleToggleImageParticles}
-        />
-      </div>
-    </div>
+    <label className={styles['setting-toggle']}>
+      <span>Image Particles</span>
+      <input
+        className={styles['setting-checkbox']}
+        type="checkbox"
+        id="image-particle-toggle"
+        checked={appProps.enableImageParticles}
+        onChange={handleToggleImageParticles}
+      />
+    </label>
   );
 };

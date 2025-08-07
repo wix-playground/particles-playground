@@ -3,6 +3,7 @@ import {getUpdateAnimationDurationMessage} from '../../interfaces';
 import {WorkerContext} from '../../contexts/WorkerContext';
 import {AppContext} from '../../contexts/AppContext';
 import {DEFAULT_ANIMATION_DURATION} from '../../constants';
+import styles from './Settings.module.css';
 
 export const AnimationDurationSlider = () => {
   const worker = useContext(WorkerContext);
@@ -22,12 +23,13 @@ export const AnimationDurationSlider = () => {
   if (!appProps) return null;
 
   return (
-    <div>
-      <div>
-        <span>Animation Duration</span>
-      </div>
-      <div style={{display: 'flex', alignItems: 'center', gap: '4px'}}>
+    <div className={styles['setting-row--column']}>
+      <label className={styles['setting-label--full-width']}>
+        Animation Duration
+      </label>
+      <div className={styles['setting-row']}>
         <input
+          className={styles['setting-slider']}
           type="range"
           min="500"
           max="5000"
@@ -35,7 +37,7 @@ export const AnimationDurationSlider = () => {
           value={duration}
           onChange={handleDurationChange}
         />
-        <span className="settings-item-value">
+        <span className={styles['setting-value']}>
           {(duration / 1000).toFixed(1)}s
         </span>
       </div>

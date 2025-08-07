@@ -1,6 +1,7 @@
 import FontFaceObserver from 'fontfaceobserver';
 import {useCallback, useEffect, useRef, useState} from 'react';
 import './App.css';
+import styles from './App.module.css';
 import {DEFAULT_FONT_STATE, SNIPPET_QUERY_PARAM} from './constants';
 import {editor} from 'monaco-editor';
 import {Settings} from './components/Settings/Settings';
@@ -150,55 +151,43 @@ const App = () => {
     <AppContext.Provider value={appProps}>
       <WorkerContext.Provider value={workerRef.current}>
         {!appProps ? (
-          <div className="loadingContainer">
+          <div className={styles['loading-container']}>
             <span>Loading...</span>
           </div>
         ) : null}
-        <div style={{display: 'flex', gap: '24px', flexDirection: 'column'}}>
-          <div
-            className="layout"
-            style={{display: 'flex', flexDirection: 'column'}}
-          >
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                gap: '8px',
-              }}
-            >
+
+        <div className={styles.app}>
+          <div className={styles['app-container']}>
+
+            {/* Settings Panel */}
+            <div className={styles['settings-panel']}>
               <Settings editorRef={editorRef} />
-              <div className="card" style={{flex: 3}}>
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    width: '100%',
-                  }}
-                >
-                  <div>
-                    <span className="cardTitle">Canvas</span>
-                  </div>
-                  <div style={{display: 'flex', gap: '4px'}}>
+            </div>
+
+            {/* Main Canvas Area */}
+            <div className={styles['main-content']}>
+              <div className={styles['canvas-section']}>
+                <div className={styles['canvas-header']}>
+                  <h1 className={styles['canvas-title']}>Canvas</h1>
+                  <div className={styles['canvas-controls']}>
                     <button onClick={play}>Play animation</button>
                     <button onClick={reset}>Reset particles</button>
                   </div>
                 </div>
-                <div
-                  className="card noPadding"
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    boxSizing: 'border-box',
-                  }}
-                >
+                <div className={styles['canvas-wrapper']}>
                   <canvas
                     ref={canvasRef}
-                    style={{width: '100%', height: '100%'}}
+                    className={styles.canvas}
                   />
                 </div>
               </div>
             </div>
-            <Editor onMount={handleEditorDidMount} />
+
+            {/* Editor Section */}
+            <div className={styles['editor-section']}>
+              <Editor onMount={handleEditorDidMount} />
+            </div>
+
           </div>
         </div>
       </WorkerContext.Provider>

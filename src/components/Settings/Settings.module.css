@@ -1,0 +1,383 @@
+/* CSS Custom Properties */
+:root {
+  /* Spacing */
+  --settings-gap-xs: 4px;
+  --settings-gap-sm: 8px;
+  --settings-gap-md: 12px;
+  --settings-gap-lg: 16px;
+  --settings-gap-xl: 20px;
+
+  /* Colors - inherit from existing theme system */
+  --settings-bg: var(--card-bg, #323232);
+  --settings-border: var(--card-border, #4f4f4f);
+  --settings-text: var(--text-primary, #ffffffde);
+  --settings-text-secondary: var(--text-secondary, #888);
+  --settings-accent: var(--accent-color, #646cff);
+  --settings-hover: var(--hover-color, #535bf2);
+
+  /* Transitions */
+  --settings-transition: 0.2s ease-in-out;
+  --settings-expand-transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Border radius */
+  --settings-radius: 8px;
+  --settings-radius-sm: 4px;
+}
+
+/* Light theme overrides */
+@media (prefers-color-scheme: light) {
+  :root {
+    --settings-bg: #f0f0f0;
+    --settings-border: #d7d7d7;
+    --settings-text: #213547;
+    --settings-text-secondary: #666;
+    --settings-accent: #747bff;
+    --settings-hover: #535bf2;
+  }
+}
+
+/* Main Settings Container */
+.settings {
+  display: flex;
+  flex-direction: column;
+  gap: var(--settings-gap-sm);
+  background-color: var(--settings-bg);
+  border-radius: var(--settings-radius);
+  border: 1px solid var(--settings-border);
+  padding: var(--settings-gap-md);
+  align-items: flex-start;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.settings__title {
+  font-weight: bold;
+  font-size: 1.25em;
+  color: var(--settings-text);
+  margin: 0 0 var(--settings-gap-sm) 0;
+}
+
+.settings__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--settings-gap-sm);
+  width: 100%;
+}
+
+/* Collapsible Group */
+.collapsible-group {
+  background-color: var(--settings-bg);
+  border: 1px solid var(--settings-border);
+  border-radius: var(--settings-radius);
+  overflow: hidden;
+  transition: all var(--settings-transition);
+}
+
+.collapsible-group:hover {
+  border-color: var(--settings-accent);
+}
+
+.collapsible-group__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--settings-gap-sm) var(--settings-gap-md);
+  background-color: transparent;
+  border: none;
+  color: var(--settings-text);
+  font-size: 1em;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  transition: background-color var(--settings-transition);
+}
+
+.collapsible-group__header:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.collapsible-group__header:focus {
+  outline: 2px solid var(--settings-accent);
+  outline-offset: -2px;
+}
+
+.collapsible-group__title {
+  display: flex;
+  align-items: center;
+  gap: var(--settings-gap-sm);
+  margin: 0;
+}
+
+.collapsible-group__icon {
+  width: 16px;
+  height: 16px;
+  transition: transform var(--settings-transition);
+  color: var(--settings-text-secondary);
+}
+
+.collapsible-group__icon--expanded {
+  transform: rotate(90deg);
+}
+
+.collapsible-group__content {
+  overflow: hidden;
+  transition: all var(--settings-expand-transition);
+}
+
+.collapsible-group__content--collapsed {
+  max-height: 0;
+  opacity: 0;
+}
+
+.collapsible-group__content--expanded {
+  max-height: 1000px; /* Large enough for any content */
+  opacity: 1;
+}
+
+.collapsible-group__inner {
+  padding: var(--settings-gap-md);
+  border-top: 1px solid var(--settings-border);
+}
+
+/* Setting Groups */
+.setting-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--settings-gap-md);
+}
+
+.setting-row {
+  display: flex;
+  align-items: center;
+  gap: var(--settings-gap-sm);
+  flex-wrap: wrap;
+}
+
+.setting-row--column {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.setting-label {
+  font-size: 0.9em;
+  color: var(--settings-text);
+  min-width: 120px;
+  font-weight: 500;
+}
+
+.setting-label--full-width {
+  min-width: unset;
+  width: 100%;
+  margin-bottom: var(--settings-gap-xs);
+}
+
+/* Form Controls */
+.setting-input {
+  padding: var(--settings-gap-xs) var(--settings-gap-sm);
+  font-size: 1em;
+  border: 1px solid var(--settings-border);
+  border-radius: var(--settings-radius-sm);
+  background-color: var(--settings-bg);
+  color: var(--settings-text);
+  transition: border-color var(--settings-transition);
+}
+
+.setting-input:focus {
+  outline: none;
+  border-color: var(--settings-accent);
+}
+
+.setting-input--number {
+  max-width: 80px;
+}
+
+.setting-input--text {
+  flex: 1;
+  min-width: 200px;
+}
+
+.setting-slider {
+  flex: 1;
+  min-width: 100px;
+  height: 6px;
+  background: var(--settings-border);
+  border-radius: 3px;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+
+.setting-slider::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  background: var(--settings-accent);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color var(--settings-transition);
+}
+
+.setting-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  background: var(--settings-accent);
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+  transition: background-color var(--settings-transition);
+}
+
+.setting-slider:hover::-webkit-slider-thumb,
+.setting-slider:hover::-moz-range-thumb {
+  background: var(--settings-hover);
+}
+
+.setting-value {
+  font-size: 0.85em;
+  color: var(--settings-text-secondary);
+  min-width: 40px;
+  text-align: center;
+  font-family: monospace;
+}
+
+/* Buttons */
+.setting-button {
+  border-radius: var(--settings-radius-sm);
+  border: 1px solid var(--settings-border);
+  padding: var(--settings-gap-xs) var(--settings-gap-md);
+  font-size: 0.9em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: var(--settings-bg);
+  color: var(--settings-text);
+  cursor: pointer;
+  transition: all var(--settings-transition);
+}
+
+.setting-button:hover {
+  border-color: var(--settings-accent);
+  background-color: rgba(100, 108, 255, 0.1);
+}
+
+.setting-button:focus {
+  outline: 2px solid var(--settings-accent);
+  outline-offset: 2px;
+}
+
+.setting-button--selected {
+  border-color: var(--settings-accent);
+  background-color: rgba(100, 108, 255, 0.2);
+}
+
+.setting-button--icon {
+  padding: var(--settings-gap-xs);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Toggle/Checkbox */
+.setting-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--settings-gap-sm);
+  cursor: pointer;
+}
+
+.setting-checkbox {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--settings-accent);
+}
+
+/* Range Group (for min/max ranges) */
+.range-group {
+  display: flex;
+  align-items: center;
+  gap: var(--settings-gap-sm);
+  flex: 1;
+  flex-wrap: wrap;
+}
+
+.range-group__separator {
+  font-size: 0.8em;
+  color: var(--settings-text-secondary);
+}
+
+/* Grid layouts */
+.settings-grid {
+  display: grid;
+  gap: var(--settings-gap-sm);
+}
+
+.settings-grid--2col {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.settings-grid--3col {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.settings-grid--auto {
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+}
+
+/* Position Grid (for StartPosition component) */
+.position-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--settings-gap-xs);
+  max-width: 120px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .settings {
+    padding: var(--settings-gap-md);
+  }
+
+  .setting-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .setting-label {
+    min-width: unset;
+    width: 100%;
+  }
+
+  .setting-input--text {
+    min-width: unset;
+    width: 100%;
+  }
+
+  .settings-grid--2col,
+  .settings-grid--3col {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .collapsible-group__content,
+  .collapsible-group__icon,
+  .setting-button,
+  .setting-input,
+  .setting-slider::-webkit-slider-thumb,
+  .setting-slider::-moz-range-thumb {
+    transition: none;
+  }
+}
+
+/* Focus visible for better keyboard navigation */
+.collapsible-group__header:focus-visible,
+.setting-button:focus-visible,
+.setting-input:focus-visible {
+  outline: 2px solid var(--settings-accent);
+  outline-offset: 2px;
+}

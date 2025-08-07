@@ -2,7 +2,7 @@ import {useCallback, useContext, useState} from 'react';
 import {AppContext} from '../../contexts/AppContext';
 import {WorkerContext} from '../../contexts/WorkerContext';
 import {Action} from '../../interfaces';
-import './TimeDistortionSettings.css';
+import styles from './Settings.module.css';
 
 // Default values from the movement function
 const DEFAULT_TIME_DILATION_MIN = 0.3;
