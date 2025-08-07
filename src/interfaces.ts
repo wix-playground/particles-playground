@@ -1,4 +1,4 @@
-import {EffectType} from "./animation-utils/interfaces";
+import {EffectType, EffectConfigurations} from "./animation-utils/interfaces";
 
 export interface Coordinates {
   x: number;
@@ -56,6 +56,7 @@ export enum Action {
   UPDATE_START_POSITION = 'UPDATE_START_POSITION',
   UPDATE_SELECTED_MOVEMENT_FUNCTION = 'UPDATE_SELECTED_MOVEMENT_FUNCTION',
   UPDATE_SELECTED_EFFECT = 'UPDATE_SELECTED_EFFECT',
+  UPDATE_EFFECT_CONFIGURATION = 'UPDATE_EFFECT_CONFIGURATION',
   UPDATE_BITMAP = 'UPDATE_BITMAP',
   UPDATE_TEXT = 'UPDATE_TEXT',
   UPDATE_FONT = 'UPDATE_FONT',
@@ -159,11 +160,20 @@ export const getUpdateSelectedEffectMessage = (payload: EffectType | null) => ({
   payload,
 });
 
+export const getUpdateEffectConfigurationMessage = (payload: {
+  effectType: EffectType;
+  configuration: EffectConfigurations[EffectType];
+}) => ({
+  type: Action.UPDATE_EFFECT_CONFIGURATION as const,
+  payload,
+});
+
 export type MainThreadMessage =
   | ReturnType<typeof getUpdateBitmapMessage>
   | ReturnType<typeof getUpdateTextMessage>
   | ReturnType<typeof getUpdateSelectedMovementFunctionMessage>
   | ReturnType<typeof getUpdateSelectedEffectMessage>
+  | ReturnType<typeof getUpdateEffectConfigurationMessage>
   | ReturnType<typeof getUpdateStartPositionMessage>
   | ReturnType<typeof getResizeParticleRadiusMessage>
   | ReturnType<typeof getResetMessage>
@@ -201,6 +211,10 @@ export interface AppProps {
   movementFunctionCode: string;
   selectedMovementFunction: string;
   selectedEffect: EffectType | null;
+  effectConfigurations: {
+    SUPER_SWIRL: EffectConfigurations['SUPER_SWIRL'];
+    BUILD: EffectConfigurations['BUILD'];
+  };
   particleRadius: number;
   text: string;
   font: FontState;

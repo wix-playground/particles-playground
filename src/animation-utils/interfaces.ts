@@ -14,7 +14,7 @@ export const EffectTypes = {
 export type EffectType = typeof EffectTypes[keyof typeof EffectTypes];
 
 
-type EffectConfigurations = {
+export type EffectConfigurations = {
   // SWIRL: {
   //   swirlTurns: number; // Controls how many revolutions the particle makes
   //   fadeInSpeed: number; // Controls how quickly the particles fade in

@@ -2,7 +2,6 @@ import {useCallback, useContext} from 'react';
 import {AppContext} from '../../contexts/AppContext';
 import {WorkerContext} from '../../contexts/WorkerContext';
 import {Action} from '../../interfaces';
-import styles from './Settings.module.css';
 
 // Default values from the movement function
 const DEFAULT_PULSE_FREQUENCY_MIN = 3;

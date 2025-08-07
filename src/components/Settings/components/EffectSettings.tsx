@@ -4,6 +4,8 @@ import {effectOptions} from '../../../animation-utils/animation-config';
 import {AppContext} from '../../../contexts/AppContext';
 import {WorkerContext} from '../../../contexts/WorkerContext';
 import {getUpdateSelectedEffectMessage} from '../../../interfaces';
+import {SuperSwirlSettings} from './SuperSwirlSettings';
+import {BuildEffectSettings} from './BuildEffectSettings';
 import styles from '../Settings.module.css';
 
 export const EffectSettings: React.FC = () => {
@@ -15,7 +17,7 @@ export const EffectSettings: React.FC = () => {
       if (worker) {
         const isCurrentlySelected = appProps?.selectedEffect === effectId;
         const newSelection = isCurrentlySelected ? null : effectId;
-        worker.postMessage(getUpdateSelectedEffectMessage(newSelection));
+        worker.postMessage(getUpdateSelectedEffectMessage(newSelection as any));
       }
     },
     [worker, appProps?.selectedEffect]
@@ -55,6 +57,19 @@ export const EffectSettings: React.FC = () => {
           </button>
         ))}
       </div>
+
+      {/* Show configuration UI for selected effect */}
+      {appProps.selectedEffect === 'SUPER_SWIRL' && (
+        <div className={styles['setting-row']}>
+          <SuperSwirlSettings />
+        </div>
+      )}
+
+      {appProps.selectedEffect === 'BUILD' && (
+        <div className={styles['setting-row']}>
+          <BuildEffectSettings />
+        </div>
+      )}
     </div>
   );
 };

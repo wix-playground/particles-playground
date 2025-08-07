@@ -53,6 +53,10 @@ const defaultAppProps: AppProps = {
   startPosition: DEFAULT_START_POSITION,
   selectedMovementFunction: DEFAULT_MOVEMENT_FUNCTION_KEY,
   selectedEffect: null,
+  effectConfigurations: {
+    SUPER_SWIRL: effectOptions.SUPER_SWIRL.defaultConfig,
+    BUILD: effectOptions.BUILD.defaultConfig,
+  },
   movementFunctionCode:
     getPredefinedMovementOptions()[DEFAULT_MOVEMENT_FUNCTION_KEY].code,
   text: DEFAULT_PARTICLES_TEXT,
@@ -268,11 +272,12 @@ const renderMainParticles = (
 ): boolean => {
   let allParticlesReached = true;
 
-  let effectFunction: MovementFunction;
+  let effectFunction: MovementFunction | null = null;
 
   if (workerState.appProps.selectedEffect) {
     const effectOption = effectOptions[workerState.appProps.selectedEffect];
-    effectFunction = effectOption.factory(effectOption.defaultConfig as any);
+    const customConfig = workerState.appProps.effectConfigurations[workerState.appProps.selectedEffect];
+    effectFunction = effectOption.factory(customConfig as any); // check if we can make this not any
   }
 
   workerState.workerParticles.forEach((particle) => {
@@ -639,6 +644,16 @@ self.onmessage = (event: MessageEvent<MainThreadMessage>) => {
     }
     case Action.UPDATE_SELECTED_EFFECT: {
       workerState.appProps.selectedEffect = payload;
+
+      self.postMessage({
+        type: WorkerAction.UPDATE_APP_PROPS,
+        data: workerState.appProps,
+      });
+      break;
+    }
+    case Action.UPDATE_EFFECT_CONFIGURATION: {
+      const {effectType, configuration} = payload;
+      workerState.appProps.effectConfigurations[effectType] = configuration as any;
 
       self.postMessage({
         type: WorkerAction.UPDATE_APP_PROPS,
