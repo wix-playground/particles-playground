@@ -35,6 +35,8 @@ import {
   drawParticle,
   isParticleAtTarget,
 } from './particle-utils';
+import {effectOptions} from './animation-utils/animation-config';
+import {MovementFunction} from './animation-utils/interfaces';
 
 let customMovementFunction: (
   particle: Particle,
@@ -50,6 +52,7 @@ const defaultAppProps: AppProps = {
   particleRadius: DEFAULT_PARTICLE_RADIUS,
   startPosition: DEFAULT_START_POSITION,
   selectedMovementFunction: DEFAULT_MOVEMENT_FUNCTION_KEY,
+  selectedEffect: null,
   movementFunctionCode:
     getPredefinedMovementOptions()[DEFAULT_MOVEMENT_FUNCTION_KEY].code,
   text: DEFAULT_PARTICLES_TEXT,
@@ -265,8 +268,27 @@ const renderMainParticles = (
 ): boolean => {
   let allParticlesReached = true;
 
+  let effectFunction: MovementFunction;
+
+  if (workerState.appProps.selectedEffect) {
+    const effectOption = effectOptions[workerState.appProps.selectedEffect];
+    effectFunction = effectOption.factory(effectOption.defaultConfig as any);
+  }
+
   workerState.workerParticles.forEach((particle) => {
-    updateParticlePosition(particle, animationStartTime, requestAnimationFrameTime);
+    if (effectFunction) {
+      // Use effect function instead of regular movement function
+      const elapsedTime = requestAnimationFrameTime - animationStartTime;
+      const animationProgress = Math.min(elapsedTime / workerState.appProps.animationDuration, 1);
+      effectFunction(particle, animationProgress, {
+        width: workerState.mainCanvas!.width,
+        height: workerState.mainCanvas!.height,
+      });
+    } else {
+      // Use regular movement function
+      updateParticlePosition(particle, animationStartTime, requestAnimationFrameTime);
+    }
+
     drawParticle({
       particle,
       context: workerState.frameContext!,
@@ -608,6 +630,15 @@ self.onmessage = (event: MessageEvent<MainThreadMessage>) => {
     }
     case Action.UPDATE_ENABLE_IMAGE_PARTICLES: {
       workerState.appProps.enableImageParticles = payload;
+
+      self.postMessage({
+        type: WorkerAction.UPDATE_APP_PROPS,
+        data: workerState.appProps,
+      });
+      break;
+    }
+    case Action.UPDATE_SELECTED_EFFECT: {
+      workerState.appProps.selectedEffect = payload;
 
       self.postMessage({
         type: WorkerAction.UPDATE_APP_PROPS,

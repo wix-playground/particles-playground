@@ -1,3 +1,5 @@
+import {EffectType} from "./animation-utils/interfaces";
+
 export interface Coordinates {
   x: number;
   y: number;
@@ -53,6 +55,7 @@ export enum Action {
   RESIZE_PARTICLE_RADIUS = 'RESIZE_PARTICLE_RADIUS',
   UPDATE_START_POSITION = 'UPDATE_START_POSITION',
   UPDATE_SELECTED_MOVEMENT_FUNCTION = 'UPDATE_SELECTED_MOVEMENT_FUNCTION',
+  UPDATE_SELECTED_EFFECT = 'UPDATE_SELECTED_EFFECT',
   UPDATE_BITMAP = 'UPDATE_BITMAP',
   UPDATE_TEXT = 'UPDATE_TEXT',
   UPDATE_FONT = 'UPDATE_FONT',
@@ -151,10 +154,16 @@ export const getUpdateEnableImageParticlesMessage = (payload: boolean) => ({
   payload,
 });
 
+export const getUpdateSelectedEffectMessage = (payload: EffectType | null) => ({
+  type: Action.UPDATE_SELECTED_EFFECT as const,
+  payload,
+});
+
 export type MainThreadMessage =
   | ReturnType<typeof getUpdateBitmapMessage>
   | ReturnType<typeof getUpdateTextMessage>
   | ReturnType<typeof getUpdateSelectedMovementFunctionMessage>
+  | ReturnType<typeof getUpdateSelectedEffectMessage>
   | ReturnType<typeof getUpdateStartPositionMessage>
   | ReturnType<typeof getResizeParticleRadiusMessage>
   | ReturnType<typeof getResetMessage>
@@ -191,6 +200,7 @@ export interface AppProps {
   startPosition: StartPositionType;
   movementFunctionCode: string;
   selectedMovementFunction: string;
+  selectedEffect: EffectType | null;
   particleRadius: number;
   text: string;
   font: FontState;
