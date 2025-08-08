@@ -158,7 +158,6 @@ const buildEffectOption: EffectOption<'BUILD'> = {
 
 const oppenheimerEffectOption: EffectOption<'OPPENHEIMER'> = {
   factory: (config) => {
-    console.log('config', config);
     return (particle, progress) => {
       // Default configuration
       const {

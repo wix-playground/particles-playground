@@ -1,21 +1,15 @@
 import {useContext} from 'react';
 import {AppContext} from '../../contexts/AppContext';
-import {editor} from 'monaco-editor';
 import {TextSettings} from './TextSettings';
 import {CollapsibleSettingsGroup} from './components/CollapsibleSettingsGroup';
 import {ParticleSettings} from './components/ParticleSettings';
 import {ColorSettings} from './components/ColorSettings';
 import {AnimationSettings} from './components/AnimationSettings';
-import {MovementSettings} from './components/MovementSettings';
 import {EffectSettings} from './components/EffectSettings';
 import {useCollapsibleState} from './hooks/useCollapsibleState';
 import styles from './Settings.module.css';
 
-export const Settings = ({
-  editorRef,
-}: {
-  editorRef: React.RefObject<editor.IStandaloneCodeEditor | null>;
-}) => {
+export const Settings = () => {
   const appProps = useContext(AppContext);
 
   // Initialize collapsible state with some sections expanded by default
@@ -23,8 +17,7 @@ export const Settings = ({
     particles: true,
     colors: false,
     animation: false,
-    movement: true,
-    effects: false,
+    effects: true,
     text: false
   });
 
@@ -36,6 +29,14 @@ export const Settings = ({
     <div className={styles.settings}>
       <h2 className={styles.settings__title}>Settings</h2>
       <div className={styles.settings__content}>
+
+        <CollapsibleSettingsGroup
+          title="Effects"
+          isExpanded={isExpanded('effects')}
+          onToggle={() => toggle('effects')}
+        >
+          <EffectSettings />
+        </CollapsibleSettingsGroup>
 
         <CollapsibleSettingsGroup
           title="Particles"
@@ -60,23 +61,6 @@ export const Settings = ({
         >
           <AnimationSettings />
         </CollapsibleSettingsGroup>
-
-        <CollapsibleSettingsGroup
-          title="Movement Functions"
-          isExpanded={isExpanded('movement')}
-          onToggle={() => toggle('movement')}
-        >
-          <MovementSettings editorRef={editorRef} />
-        </CollapsibleSettingsGroup>
-
-        <CollapsibleSettingsGroup
-          title="Effects"
-          isExpanded={isExpanded('effects')}
-          onToggle={() => toggle('effects')}
-        >
-          <EffectSettings />
-        </CollapsibleSettingsGroup>
-
         <CollapsibleSettingsGroup
           title="Text"
           isExpanded={isExpanded('text')}
