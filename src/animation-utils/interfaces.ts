@@ -1,8 +1,8 @@
-import {Dimensions, Particle} from "../interfaces";
+import {Particle, TextBoundaries} from "../interfaces";
 
 export type MovementFunction = (particle: Particle & {
   [key: string]: any;
-}, animationProgress: number, canvasDimensions: Dimensions) => void;
+}, animationProgress: number, textBoundaries: TextBoundaries) => void;
 
 export type EasingType = 'ease-in-out' | 'ease-in' | 'ease-out' | 'linear' | 'quadratic-out';
 
@@ -10,6 +10,7 @@ export const EffectTypes = {
   BUILD: 'BUILD',
   SUPER_SWIRL: 'SUPER_SWIRL',
   OPPENHEIMER: 'OPPENHEIMER',
+  SCANNING: 'SCANNING',
 } as const
 
 export type EffectType = typeof EffectTypes[keyof typeof EffectTypes];
@@ -53,6 +54,12 @@ export type EffectConfigurations = {
     oscillationAmount: number,
     settlingSpeed: number,
     particleWeight: number,
+  }
+  SCANNING: {
+    // scanSpeed: number,
+    // scanDirection: number,
+    // scanIntensity: number,
+    // scanOffset: number,
   }
 }
 

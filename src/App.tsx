@@ -9,7 +9,6 @@ import {
   AppProps,
   getInitializeMessage,
   getPlayMessage,
-  getResetMessage,
   getUpdateBitmapMessage,
   WorkerAction,
 } from './interfaces';
@@ -143,10 +142,6 @@ const App = () => {
     workerRef.current?.postMessage(getPlayMessage());
   }, []);
 
-  const reset = useCallback(() => {
-    workerRef.current?.postMessage(getResetMessage());
-  }, []);
-
   return (
     <AppContext.Provider value={appProps}>
       <WorkerContext.Provider value={workerRef.current}>
@@ -161,7 +156,7 @@ const App = () => {
 
             {/* Settings Panel */}
             <div className={styles['settings-panel']}>
-              <Settings editorRef={editorRef} />
+              <Settings />
             </div>
 
             {/* Main Canvas Area */}
@@ -171,7 +166,6 @@ const App = () => {
                   <h1 className={styles['canvas-title']}>Canvas</h1>
                   <div className={styles['canvas-controls']}>
                     <button onClick={play}>Play animation</button>
-                    <button onClick={reset}>Reset particles</button>
                   </div>
                 </div>
                 <div className={styles['canvas-wrapper']}>

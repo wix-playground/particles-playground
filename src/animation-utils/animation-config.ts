@@ -159,7 +159,7 @@ const buildEffectOption: EffectOption<'BUILD'> = {
 
 const oppenheimerEffectOption: EffectOption<'OPPENHEIMER'> = {
   factory: (config) => {
-    return (particle, progress) => {
+    return (particle, progress, textBoundaries) => {
       // Default configuration
       const {
         windStrength,        // 0-1: Overall wind intensity
@@ -373,8 +373,99 @@ const oppenheimerEffectOption: EffectOption<'OPPENHEIMER'> = {
   }
 }
 
+const scanningEffectOption: EffectOption<'SCANNING'> = {
+  factory: (config) => {
+    return (particle, progress, textBoundaries) => {
+      const { } = config
+      const oscillationFrequency = 3; // Number of complete back-and-forth cycles
+      const totalPasses = oscillationFrequency * 2; // Each cycle has 2 passes (left-to-right and right-to-left)
+
+      // One-time initialization
+      if (particle.animation === undefined) {
+        // Convert UUID string to a numeric hash for modulo operation
+        particle.id = crypto.randomUUID();
+        const uuidHash = (particle.id as String).split('').reduce((hash, char) => {
+          return (hash << 5) - hash + char.charCodeAt(0);
+        }, 0);
+        const particleId = Math.abs(uuidHash);
+
+        // Assign each particle to a specific pass (1 to totalPasses-1)
+        // Reserve the final pass to ensure all particles settle before compression ends
+        const usablePasses = totalPasses - 1; // Use only first 5 passes
+        const assignedPass = (particleId % usablePasses) + 1;
+
+        particle.animation = {
+          settled: false,
+          assignedPass, // Which pass this particle should settle on
+          currentPass: 0, // Track current pass number
+        };
+
+        particle.y = particle.targetY;
+        particle.opacity = 1;
+      }
+
+      // If particle has already settled, don't move it
+      if (particle.animation.settled) {
+        particle.x = particle.targetX;
+        particle.y = particle.targetY;
+        return particle;
+      }
+
+      // Wait for valid bounds
+      const cutWidth = textBoundaries.maxX - textBoundaries.minX;
+      if (cutWidth <= 0 || !isFinite(cutWidth)) {
+        return particle;
+      }
+
+      // Create oscillation using sine wave (back and forth motion)
+      const oscillationProgress = Math.sin(
+        progress * oscillationFrequency * Math.PI * 2,
+      );
+
+      // Calculate which pass we're currently on by tracking oscillation cycles
+      const passProgress = progress * totalPasses;
+      const currentPass = Math.min(Math.floor(passProgress) + 1, totalPasses);
+
+      // Update current pass tracking
+      if (currentPass > particle.animation.currentPass) {
+        particle.animation.currentPass = currentPass;
+      }
+
+      // Map sine wave (-1 to 1) to actual X positions
+      const leftEdge = textBoundaries.minX - 30;
+      const rightEdge = textBoundaries.maxX + 30;
+      const cutX =
+        leftEdge + ((oscillationProgress + 1) / 2) * (rightEdge - leftEdge);
+
+      // Move unsettled particles with the cut
+      particle.x = cutX;
+
+      // Check if cut is passing over this particle's target location
+      const distanceFromTarget = Math.abs(particle.x - particle.targetX);
+      const passThreshold = 12; // How close the cut needs to be to settle a particle
+
+      // Settle particle if we're on its assigned pass and the cut is close enough
+      if (
+        particle.animation.currentPass >= particle.animation.assignedPass &&
+        distanceFromTarget <= passThreshold
+      ) {
+        particle.x = particle.targetX;
+        particle.y = particle.targetY;
+        particle.animation.settled = true;
+      }
+    }
+  },
+  defaultConfig: {
+    // scanSpeed: 1,
+    // scanDirection: 1,
+    // scanIntensity: 1,
+    // scanOffset: 1,
+  }
+}
+
 export const effectOptions = {
   [EffectTypes.SUPER_SWIRL]: superSwirlEffectOption,
   [EffectTypes.BUILD]: buildEffectOption,
   [EffectTypes.OPPENHEIMER]: oppenheimerEffectOption,
+  [EffectTypes.SCANNING]: scanningEffectOption,
 } as const;

@@ -51,7 +51,6 @@ export type StartPositionType =
 export enum Action {
   INITIALIZE = 'INITIALIZE',
   PLAY = 'PLAY',
-  RESET = 'RESET',
   RESIZE_PARTICLE_RADIUS = 'RESIZE_PARTICLE_RADIUS',
   UPDATE_START_POSITION = 'UPDATE_START_POSITION',
   UPDATE_SELECTED_MOVEMENT_FUNCTION = 'UPDATE_SELECTED_MOVEMENT_FUNCTION',
@@ -99,11 +98,6 @@ export const getInitializeMessage = (payload: InitializeMessagePayload) => ({
 
 export const getPlayMessage = () => ({
   type: Action.PLAY as const,
-  payload: undefined,
-});
-
-export const getResetMessage = () => ({
-  type: Action.RESET as const,
   payload: undefined,
 });
 
@@ -215,6 +209,7 @@ export interface AppProps {
     SUPER_SWIRL: EffectConfigurations['SUPER_SWIRL'];
     BUILD: EffectConfigurations['BUILD'];
     OPPENHEIMER: EffectConfigurations['OPPENHEIMER'];
+    SCANNING: EffectConfigurations['SCANNING'];
   };
   particleRadius: number;
   text: string;
@@ -224,3 +219,10 @@ export interface AppProps {
   enableBubbles: boolean;
   enableImageParticles: boolean;
 }
+
+export type TextBoundaries = Dimensions & {
+  minX: number;
+  minY: number;
+  maxX: number;
+  maxY: number;
+};
