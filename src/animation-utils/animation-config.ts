@@ -16,6 +16,7 @@ const superSwirlEffectOption: EffectOption<'SUPER_SWIRL'> = {
 
         particle._radius = Math.sqrt(dx * dx + dy * dy); // distance to target
         particle._angle = Math.atan2(dy, dx);            // angle around the target
+        particle._turns = swirlTurns + Math.random();             // full spiral turns (can tweak)
 
         particle._started = true;
       }
@@ -24,7 +25,7 @@ const superSwirlEffectOption: EffectOption<'SUPER_SWIRL'> = {
       const currentRadius = particle._radius * (1 - ease);
 
       // Rotate clockwise over time (more ease = more angle)
-      const angle = particle._angle + (spiralDirection * 2 * Math.PI * swirlTurns * ease);
+      const angle = particle._angle + (spiralDirection * 2 * Math.PI * particle._turns * ease);
 
       // Position relative to target
       particle.x = particle.targetX + currentRadius * Math.cos(angle);
