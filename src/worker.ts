@@ -659,7 +659,7 @@ self.onmessage = (event: MessageEvent<MainThreadMessage>) => {
     }
     case Action.UPDATE_EFFECT_CONFIGURATION: {
       const {effectType, configuration} = payload;
-      workerState.appProps.effectConfigurations[effectType] = configuration as any;
+      (workerState.appProps.effectConfigurations as any)[effectType] = configuration;
 
       self.postMessage({
         type: WorkerAction.UPDATE_APP_PROPS,

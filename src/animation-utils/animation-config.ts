@@ -159,7 +159,7 @@ const buildEffectOption: EffectOption<'BUILD'> = {
 
 const oppenheimerEffectOption: EffectOption<'OPPENHEIMER'> = {
   factory: (config) => {
-    return (particle, progress, textBoundaries) => {
+    return (particle, progress, _textBoundaries) => {
       // Default configuration
       const {
         windStrength,        // 0-1: Overall wind intensity

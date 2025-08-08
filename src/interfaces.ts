@@ -170,7 +170,6 @@ export type MainThreadMessage =
   | ReturnType<typeof getUpdateEffectConfigurationMessage>
   | ReturnType<typeof getUpdateStartPositionMessage>
   | ReturnType<typeof getResizeParticleRadiusMessage>
-  | ReturnType<typeof getResetMessage>
   | ReturnType<typeof getPlayMessage>
   | ReturnType<typeof getInitializeMessage>
   | ReturnType<typeof getUpdateFontMessage>
