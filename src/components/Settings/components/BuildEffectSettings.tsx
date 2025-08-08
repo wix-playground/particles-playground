@@ -2,6 +2,7 @@ import React, {useContext, useState, useCallback, useEffect} from 'react';
 import {AppContext} from '../../../contexts/AppContext';
 import {WorkerContext} from '../../../contexts/WorkerContext';
 import {getUpdateEffectConfigurationMessage} from '../../../interfaces';
+import {SettingsSlider} from '../common';
 import styles from '../Settings.module.css';
 import {effectOptions} from '../../../animation-utils/animation-config';
 
@@ -44,174 +45,130 @@ export const BuildEffectSettings: React.FC = () => {
         <label className={styles['setting-label--full-width']}>Phase Timing</label>
       </div>
 
-      <div className={styles['setting-row']}>
-        <label className={styles['setting-label']}>Horizontal Phase End:</label>
-        <input
-          className={`${styles['setting-slider']}`}
-          type="range"
-          min="0.1"
-          max="0.8"
-          step="0.01"
-          value={config.horizontalPhaseEnd}
-          onChange={(e) => handleValueChange('horizontalPhaseEnd', Number(e.target.value))}
-        />
-        <span className={styles['setting-value']}>{config.horizontalPhaseEnd.toFixed(2)}</span>
-      </div>
+      <SettingsSlider
+        label="Horizontal Phase End:"
+        value={config.horizontalPhaseEnd}
+        min={0.1}
+        max={0.8}
+        step={0.01}
+        onChange={(value) => handleValueChange('horizontalPhaseEnd', value)}
+        formatValue={(value) => value.toFixed(2)}
+      />
 
-      <div className={styles['setting-row']}>
-        <label className={styles['setting-label']}>Bounce End Point:</label>
-        <input
-          className={`${styles['setting-slider']}`}
-          type="range"
-          min="0.5"
-          max="1.5"
-          step="0.01"
-          value={config.bounceEndPoint}
-          onChange={(e) => handleValueChange('bounceEndPoint', Number(e.target.value))}
-        />
-        <span className={styles['setting-value']}>{config.bounceEndPoint.toFixed(2)}</span>
-      </div>
+      <SettingsSlider
+        label="Bounce End Point:"
+        value={config.bounceEndPoint}
+        min={0.5}
+        max={1.5}
+        step={0.01}
+        onChange={(value) => handleValueChange('bounceEndPoint', value)}
+        formatValue={(value) => value.toFixed(2)}
+      />
 
       {/* Compression Controls */}
       <div className={styles['setting-row']}>
         <label className={styles['setting-label--full-width']}>Compression Controls</label>
       </div>
 
-      <div className={styles['setting-row']}>
-        <label className={styles['setting-label']}>Vertical Compression:</label>
-        <input
-          className={`${styles['setting-slider']}`}
-          type="range"
-          min="0.1"
-          max="0.8"
-          step="0.01"
-          value={config.verticalCompressionFactor}
-          onChange={(e) => handleValueChange('verticalCompressionFactor', Number(e.target.value))}
-        />
-        <span className={styles['setting-value']}>{config.verticalCompressionFactor.toFixed(2)}</span>
-      </div>
+      <SettingsSlider
+        label="Vertical Compression:"
+        value={config.verticalCompressionFactor}
+        min={0.1}
+        max={0.8}
+        step={0.01}
+        onChange={(value) => handleValueChange('verticalCompressionFactor', value)}
+        formatValue={(value) => value.toFixed(2)}
+      />
 
-      <div className={styles['setting-row']}>
-        <label className={styles['setting-label']}>Decompression Start:</label>
-        <input
-          className={`${styles['setting-slider']}`}
-          type="range"
-          min="0.2"
-          max="0.9"
-          step="0.01"
-          value={config.decompressionStart}
-          onChange={(e) => handleValueChange('decompressionStart', Number(e.target.value))}
-        />
-        <span className={styles['setting-value']}>{config.decompressionStart.toFixed(2)}</span>
-      </div>
+      <SettingsSlider
+        label="Decompression Start:"
+        value={config.decompressionStart}
+        min={0.2}
+        max={0.9}
+        step={0.01}
+        onChange={(value) => handleValueChange('decompressionStart', value)}
+        formatValue={(value) => value.toFixed(2)}
+      />
 
-      <div className={styles['setting-row']}>
-        <label className={styles['setting-label']}>Decompression Easing:</label>
-        <input
-          className={`${styles['setting-slider']}`}
-          type="range"
-          min="0.5"
-          max="2"
-          step="0.1"
-          value={config.decompressionEasing}
-          onChange={(e) => handleValueChange('decompressionEasing', Number(e.target.value))}
-        />
-        <span className={styles['setting-value']}>{config.decompressionEasing.toFixed(1)}</span>
-      </div>
+      <SettingsSlider
+        label="Decompression Easing:"
+        value={config.decompressionEasing}
+        min={0.5}
+        max={2}
+        step={0.1}
+        onChange={(value) => handleValueChange('decompressionEasing', value)}
+        formatValue={(value) => value.toFixed(1)}
+      />
 
       {/* Scale Effects */}
       <div className={styles['setting-row']}>
         <label className={styles['setting-label--full-width']}>Scale Effects</label>
       </div>
 
-      <div className={styles['setting-row']}>
-        <label className={styles['setting-label']}>Horizontal Scale Shrink:</label>
-        <input
-          className={`${styles['setting-slider']}`}
-          type="range"
-          min="0"
-          max="0.5"
-          step="0.01"
-          value={config.horizontalScaleShrink}
-          onChange={(e) => handleValueChange('horizontalScaleShrink', Number(e.target.value))}
-        />
-        <span className={styles['setting-value']}>{config.horizontalScaleShrink.toFixed(2)}</span>
-      </div>
+      <SettingsSlider
+        label="Horizontal Scale Shrink:"
+        value={config.horizontalScaleShrink}
+        min={0}
+        max={0.5}
+        step={0.01}
+        onChange={(value) => handleValueChange('horizontalScaleShrink', value)}
+        formatValue={(value) => value.toFixed(2)}
+      />
 
-      <div className={styles['setting-row']}>
-        <label className={styles['setting-label']}>Vertical Scale Shrink:</label>
-        <input
-          className={`${styles['setting-slider']}`}
-          type="range"
-          min="0"
-          max="0.5"
-          step="0.01"
-          value={config.verticalScaleShrink}
-          onChange={(e) => handleValueChange('verticalScaleShrink', Number(e.target.value))}
-        />
-        <span className={styles['setting-value']}>{config.verticalScaleShrink.toFixed(2)}</span>
-      </div>
+      <SettingsSlider
+        label="Vertical Scale Shrink:"
+        value={config.verticalScaleShrink}
+        min={0}
+        max={0.5}
+        step={0.01}
+        onChange={(value) => handleValueChange('verticalScaleShrink', value)}
+        formatValue={(value) => value.toFixed(2)}
+      />
 
-      <div className={styles['setting-row']}>
-        <label className={styles['setting-label']}>Scaling Boost:</label>
-        <input
-          className={`${styles['setting-slider']}`}
-          type="range"
-          min="0"
-          max="1"
-          step="0.01"
-          value={config.scalingBoost}
-          onChange={(e) => handleValueChange('scalingBoost', Number(e.target.value))}
-        />
-        <span className={styles['setting-value']}>{config.scalingBoost.toFixed(2)}</span>
-      </div>
+      <SettingsSlider
+        label="Scaling Boost:"
+        value={config.scalingBoost}
+        min={0}
+        max={1}
+        step={0.01}
+        onChange={(value) => handleValueChange('scalingBoost', value)}
+        formatValue={(value) => value.toFixed(2)}
+      />
 
-      <div className={styles['setting-row']}>
-        <label className={styles['setting-label']}>Scaling Phase End:</label>
-        <input
-          className={`${styles['setting-slider']}`}
-          type="range"
-          min="0.1"
-          max="1"
-          step="0.01"
-          value={config.scalingPhaseEnd}
-          onChange={(e) => handleValueChange('scalingPhaseEnd', Number(e.target.value))}
-        />
-        <span className={styles['setting-value']}>{config.scalingPhaseEnd.toFixed(2)}</span>
-      </div>
+      <SettingsSlider
+        label="Scaling Phase End:"
+        value={config.scalingPhaseEnd}
+        min={0.1}
+        max={1}
+        step={0.01}
+        onChange={(value) => handleValueChange('scalingPhaseEnd', value)}
+        formatValue={(value) => value.toFixed(2)}
+      />
 
       {/* Bouncy Easing */}
       <div className={styles['setting-row']}>
         <label className={styles['setting-label--full-width']}>Bouncy Easing</label>
       </div>
 
-      <div className={styles['setting-row']}>
-        <label className={styles['setting-label']}>Bouncy Intensity:</label>
-        <input
-          className={`${styles['setting-slider']}`}
-          type="range"
-          min="1"
-          max="20"
-          step="0.5"
-          value={config.bouncyIntensity}
-          onChange={(e) => handleValueChange('bouncyIntensity', Number(e.target.value))}
-        />
-        <span className={styles['setting-value']}>{config.bouncyIntensity.toFixed(1)}</span>
-      </div>
+      <SettingsSlider
+        label="Bouncy Intensity:"
+        value={config.bouncyIntensity}
+        min={1}
+        max={20}
+        step={0.5}
+        onChange={(value) => handleValueChange('bouncyIntensity', value)}
+        formatValue={(value) => value.toFixed(1)}
+      />
 
-      <div className={styles['setting-row']}>
-        <label className={styles['setting-label']}>Bouncy Offset:</label>
-        <input
-          className={`${styles['setting-slider']}`}
-          type="range"
-          min="0"
-          max="2"
-          step="0.05"
-          value={config.bouncyOffset}
-          onChange={(e) => handleValueChange('bouncyOffset', Number(e.target.value))}
-        />
-        <span className={styles['setting-value']}>{config.bouncyOffset.toFixed(2)}</span>
-      </div>
+      <SettingsSlider
+        label="Bouncy Offset:"
+        value={config.bouncyOffset}
+        min={0}
+        max={2}
+        step={0.05}
+        onChange={(value) => handleValueChange('bouncyOffset', value)}
+        formatValue={(value) => value.toFixed(2)}
+      />
     </div>
   );
 };

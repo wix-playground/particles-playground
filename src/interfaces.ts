@@ -214,6 +214,7 @@ export interface AppProps {
   effectConfigurations: {
     SUPER_SWIRL: EffectConfigurations['SUPER_SWIRL'];
     BUILD: EffectConfigurations['BUILD'];
+    OPPENHEIMER: EffectConfigurations['OPPENHEIMER'];
   };
   particleRadius: number;
   text: string;

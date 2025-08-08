@@ -56,6 +56,7 @@ const defaultAppProps: AppProps = {
   effectConfigurations: {
     SUPER_SWIRL: effectOptions.SUPER_SWIRL.defaultConfig,
     BUILD: effectOptions.BUILD.defaultConfig,
+    OPPENHEIMER: effectOptions.OPPENHEIMER.defaultConfig,
   },
   movementFunctionCode:
     getPredefinedMovementOptions()[DEFAULT_MOVEMENT_FUNCTION_KEY].code,

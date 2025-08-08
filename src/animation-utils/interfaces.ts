@@ -9,6 +9,7 @@ export type EasingType = 'ease-in-out' | 'ease-in' | 'ease-out' | 'linear' | 'qu
 export const EffectTypes = {
   BUILD: 'BUILD',
   SUPER_SWIRL: 'SUPER_SWIRL',
+  OPPENHEIMER: 'OPPENHEIMER',
 } as const
 
 export type EffectType = typeof EffectTypes[keyof typeof EffectTypes];
@@ -45,6 +46,13 @@ export type EffectConfigurations = {
     bouncyIntensity: number,
     bouncyOffset: number,
     startPosition: 'center'
+  }
+  OPPENHEIMER: {
+    windStrength: number,
+    turbulenceScale: number,
+    oscillationAmount: number,
+    settlingSpeed: number,
+    particleWeight: number,
   }
 }
 

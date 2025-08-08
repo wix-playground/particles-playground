@@ -6,6 +6,7 @@ import {WorkerContext} from '../../../contexts/WorkerContext';
 import {getUpdateSelectedEffectMessage} from '../../../interfaces';
 import {SuperSwirlSettings} from './SuperSwirlSettings';
 import {BuildEffectSettings} from './BuildEffectSettings';
+import {OppenheimerSettings} from './OppenheimerSettings';
 import styles from '../Settings.module.css';
 
 export const EffectSettings: React.FC = () => {
@@ -52,6 +53,7 @@ export const EffectSettings: React.FC = () => {
               <div className={styles['effect-option__description']}>
                 {effect.id === 'SUPER_SWIRL' && 'Spiral animation with configurable turns'}
                 {effect.id === 'BUILD' && 'Multi-phase build animation with bouncy effects'}
+                {effect.id === 'OPPENHEIMER' && 'Wind-driven particle animation with turbulence effects'}
               </div>
             </div>
           </button>
@@ -68,6 +70,12 @@ export const EffectSettings: React.FC = () => {
       {appProps.selectedEffect === 'BUILD' && (
         <div className={styles['setting-row']}>
           <BuildEffectSettings />
+        </div>
+      )}
+
+      {appProps.selectedEffect === 'OPPENHEIMER' && (
+        <div className={styles['setting-row']}>
+          <OppenheimerSettings />
         </div>
       )}
     </div>

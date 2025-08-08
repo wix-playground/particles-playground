@@ -2,6 +2,7 @@ import {useCallback, useContext} from 'react';
 import {AppContext} from '../../contexts/AppContext';
 import {WorkerContext} from '../../contexts/WorkerContext';
 import {Action} from '../../interfaces';
+import {SettingsSlider} from './common';
 
 // Default values from the movement function
 const DEFAULT_PULSE_FREQUENCY_MIN = 3;
@@ -195,31 +196,27 @@ return (particle, animationStartTime, currentTime, canvasDimensions, animationDu
           </div>
         </div>
 
-        <div className="settingRow">
-          <label>Color Cycles:</label>
-          <input
-            type="range"
-            min="0.5"
-            max="5"
-            step="0.5"
-            value={settings.colorCycles}
-            onChange={(e) => handleSettingChange('colorCycles', Number(e.target.value))}
-          />
-          <span>{settings.colorCycles}x</span>
-        </div>
+        <SettingsSlider
+          label="Color Cycles:"
+          value={settings.colorCycles}
+          min={0.5}
+          max={5}
+          step={0.5}
+          onChange={(value) => handleSettingChange('colorCycles', value)}
+          formatValue={(value) => `${value}x`}
+          useModuleStyles={false}
+        />
 
-        <div className="settingRow">
-          <label>Color Saturation:</label>
-          <input
-            type="range"
-            min="0"
-            max="100"
-            step="5"
-            value={settings.saturation}
-            onChange={(e) => handleSettingChange('saturation', Number(e.target.value))}
-          />
-          <span>{settings.saturation}%</span>
-        </div>
+        <SettingsSlider
+          label="Color Saturation:"
+          value={settings.saturation}
+          min={0}
+          max={100}
+          step={5}
+          onChange={(value) => handleSettingChange('saturation', value)}
+          formatValue={(value) => `${value}%`}
+          useModuleStyles={false}
+        />
 
         <div className="settingRow">
           <label>Lightness:</label>
