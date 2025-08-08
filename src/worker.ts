@@ -21,10 +21,12 @@ import {
   Dimensions,
   MainThreadMessage,
   InitializeMessagePayload,
+  TextBoundaries,
 } from './interfaces';
 import {getPredefinedMovementOptions} from './movement';
 import {
   getStartCoordinatesConfig,
+  getTextBoundaries,
   getValidImageBlocks,
 } from './utils';
 import {
@@ -35,6 +37,8 @@ import {
   drawParticle,
   isParticleAtTarget,
 } from './particle-utils';
+import {effectOptions} from './animation-utils/animation-config';
+import {MovementFunction} from './animation-utils/interfaces';
 
 let customMovementFunction: (
   particle: Particle,
@@ -50,6 +54,13 @@ const defaultAppProps: AppProps = {
   particleRadius: DEFAULT_PARTICLE_RADIUS,
   startPosition: DEFAULT_START_POSITION,
   selectedMovementFunction: DEFAULT_MOVEMENT_FUNCTION_KEY,
+  selectedEffect: null,
+  effectConfigurations: {
+    SUPER_SWIRL: effectOptions.SUPER_SWIRL.defaultConfig,
+    BUILD: effectOptions.BUILD.defaultConfig,
+    OPPENHEIMER: effectOptions.OPPENHEIMER.defaultConfig,
+    SCANNING: effectOptions.SCANNING.defaultConfig,
+  },
   movementFunctionCode:
     getPredefinedMovementOptions()[DEFAULT_MOVEMENT_FUNCTION_KEY].code,
   text: DEFAULT_PARTICLES_TEXT,
@@ -73,6 +84,7 @@ const workerState: {
   validBlocks: Uint8Array<ArrayBuffer> | null;
   blockHeight: number;
   blockWidth: number;
+  textBoundaries: TextBoundaries | null;
   // Main thread facing props
   appProps: AppProps;
   revealProgress: number;
@@ -90,6 +102,7 @@ const workerState: {
   blockWidth: 0,
   appProps: defaultAppProps,
   revealProgress: 0,
+  textBoundaries: null,
 };
 
 let startCoordinatesConfig: ReturnType<typeof getStartCoordinatesConfig>;
@@ -132,6 +145,8 @@ const initialize = (data: InitializeMessagePayload) => {
     ),
     workerState.appProps.particleRadius
   );
+
+  workerState.textBoundaries = getTextBoundaries(workerState.workerParticles, workerState.appProps.particleRadius);
 
   workerState.validBlocks = _validBlocks;
   workerState.blockHeight = _blockHeight;
@@ -265,8 +280,25 @@ const renderMainParticles = (
 ): boolean => {
   let allParticlesReached = true;
 
+  let effectFunction: MovementFunction | null = null;
+
+  if (workerState.appProps.selectedEffect) {
+    const effectOption = effectOptions[workerState.appProps.selectedEffect];
+    const customConfig = workerState.appProps.effectConfigurations[workerState.appProps.selectedEffect];
+    effectFunction = effectOption.factory(customConfig as any); // check if we can make this not any
+  }
+
   workerState.workerParticles.forEach((particle) => {
-    updateParticlePosition(particle, animationStartTime, requestAnimationFrameTime);
+    if (effectFunction) {
+      // Use effect function instead of regular movement function
+      const elapsedTime = requestAnimationFrameTime - animationStartTime;
+      const animationProgress = Math.min(elapsedTime / workerState.appProps.animationDuration, 1);
+      effectFunction(particle, animationProgress, workerState.textBoundaries!);
+    } else {
+      // Use regular movement function
+      updateParticlePosition(particle, animationStartTime, requestAnimationFrameTime);
+    }
+
     drawParticle({
       particle,
       context: workerState.frameContext!,
@@ -344,6 +376,50 @@ const play = () => {
   renderParticles(startTime, startTime);
 };
 
+const resetState = () => {
+  if (workerState.animationFrameId) {
+    cancelAnimationFrame(workerState.animationFrameId);
+  }
+
+  workerState.bubbleParticles = [];
+  workerState.revealProgress = 0;
+
+  workerState.workerParticles = workerState.workerParticles.map(
+    (particle) => {
+      const initialCoordinates =
+        startCoordinatesConfig[
+          workerState.appProps.startPosition as StartPositionType
+        ]();
+      return {
+        x: initialCoordinates.x,
+        y: initialCoordinates.y,
+        initialX: initialCoordinates.x,
+        initialY: initialCoordinates.y,
+        targetX: particle.targetX,
+        targetY: particle.targetY,
+        scale: 1,
+        opacity: 1,
+        color: particle.color,
+        revealProgress: 0,
+        revealThreshold: particle.revealThreshold,
+      };
+    }
+  );
+
+  workerState.frameContext!.clearRect(
+    0,
+    0,
+    workerState.frameCanvas!.width,
+    workerState.frameCanvas!.height
+  );
+  const frameBitmap = workerState.frameCanvas!.transferToImageBitmap();
+  workerState.mainContext!.transferFromImageBitmap(frameBitmap);
+
+  if (workerState.animationFrameId) {
+    cancelAnimationFrame(workerState.animationFrameId);
+  }
+}
+
 self.onmessage = (event: MessageEvent<MainThreadMessage>) => {
   // TODO: move to reducer.ts, create a state
   // TODO: do type magic
@@ -360,54 +436,8 @@ self.onmessage = (event: MessageEvent<MainThreadMessage>) => {
       break;
     }
     case Action.PLAY: {
-      if (workerState.animationFrameId) {
-        cancelAnimationFrame(workerState.animationFrameId);
-      }
-
-      // Clear any existing bubbles before starting new animation
-      workerState.bubbleParticles = [];
-
+      resetState()
       play();
-      break;
-    }
-    case Action.RESET: {
-      if (workerState.animationFrameId) {
-        cancelAnimationFrame(workerState.animationFrameId);
-      }
-      workerState.workerParticles = workerState.workerParticles.map(
-        (particle) => {
-          const initialCoordinates =
-            startCoordinatesConfig[
-              workerState.appProps.startPosition as StartPositionType
-            ]();
-          return {
-            x: initialCoordinates.x,
-            y: initialCoordinates.y,
-            initialX: initialCoordinates.x,
-            initialY: initialCoordinates.y,
-            targetX: particle.targetX,
-            targetY: particle.targetY,
-            scale: 1,
-            opacity: 1,
-            color: particle.color,
-            revealProgress: 0,
-            revealThreshold: particle.revealThreshold,
-          };
-        }
-      );
-
-      workerState.frameContext!.clearRect(
-        0,
-        0,
-        workerState.frameCanvas!.width,
-        workerState.frameCanvas!.height
-      );
-      const frameBitmap = workerState.frameCanvas!.transferToImageBitmap();
-      workerState.mainContext!.transferFromImageBitmap(frameBitmap);
-
-      if (workerState.animationFrameId) {
-        cancelAnimationFrame(workerState.animationFrameId);
-      }
       break;
     }
     case Action.RESIZE_PARTICLE_RADIUS: {
@@ -438,6 +468,8 @@ self.onmessage = (event: MessageEvent<MainThreadMessage>) => {
         blockWidth: workerState.blockWidth,
         startPosition: workerState.appProps.startPosition,
       });
+
+      workerState.textBoundaries = getTextBoundaries(workerState.workerParticles, workerState.appProps.particleRadius);
 
       self.postMessage({
         type: WorkerAction.UPDATE_APP_PROPS,
@@ -562,6 +594,7 @@ self.onmessage = (event: MessageEvent<MainThreadMessage>) => {
           ),
           workerState.appProps.particleRadius
         );
+        workerState.textBoundaries = getTextBoundaries(workerState.workerParticles, workerState.appProps.particleRadius);
 
         workerState.validBlocks = _validBlocks;
         workerState.blockHeight = _blockHeight;
@@ -608,6 +641,25 @@ self.onmessage = (event: MessageEvent<MainThreadMessage>) => {
     }
     case Action.UPDATE_ENABLE_IMAGE_PARTICLES: {
       workerState.appProps.enableImageParticles = payload;
+
+      self.postMessage({
+        type: WorkerAction.UPDATE_APP_PROPS,
+        data: workerState.appProps,
+      });
+      break;
+    }
+    case Action.UPDATE_SELECTED_EFFECT: {
+      workerState.appProps.selectedEffect = payload;
+
+      self.postMessage({
+        type: WorkerAction.UPDATE_APP_PROPS,
+        data: workerState.appProps,
+      });
+      break;
+    }
+    case Action.UPDATE_EFFECT_CONFIGURATION: {
+      const {effectType, configuration} = payload;
+      (workerState.appProps.effectConfigurations as any)[effectType] = configuration;
 
       self.postMessage({
         type: WorkerAction.UPDATE_APP_PROPS,

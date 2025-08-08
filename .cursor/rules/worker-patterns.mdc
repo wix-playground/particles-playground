@@ -1,0 +1,80 @@
+---
+description: 'Web Worker communication and threading patterns'
+---
+
+# Web Worker Communication Patterns
+
+## Worker Architecture
+
+### Main Thread Responsibilities
+
+- UI rendering and user interactions
+- Settings management via [App.tsx](mdc:src/App.tsx)
+- Canvas setup and bitmap generation
+- Font loading and text rendering
+
+### Worker Thread Responsibilities
+
+- Particle simulation and animation logic in [worker.ts](mdc:src/worker.ts)
+- Canvas rendering operations
+- Heavy computational tasks
+- Animation frame management
+
+## Message Communication
+
+### Message Structure
+
+All messages follow this pattern in [interfaces.ts](mdc:src/interfaces.ts):
+
+```typescript
+export const getActionMessage = (payload: Type) => ({
+  type: Action.ACTION_NAME as const,
+  payload,
+});
+```
+
+### Action Types
+
+- `INITIALIZE` - Setup worker with canvas and initial state
+- `PLAY` - Start particle animation
+- `UPDATE_*` - Modify specific properties (text, colors, effects, etc.)
+
+### Worker Responses
+
+Worker sends back:
+
+- `WorkerAction.INITIALIZED` - Worker setup complete
+- `WorkerAction.UPDATE_APP_PROPS` - State synchronization
+
+## Data Transfer Patterns
+
+### Message Posting
+
+From components:
+
+```typescript
+const worker = useContext(WorkerContext);
+worker?.postMessage(getUpdateMessage(newValue));
+```
+
+## Worker Lifecycle
+
+### Initialization
+
+1. Create worker in [App.tsx](mdc:src/App.tsx) useEffect
+2. Transfer canvas control to worker
+3. Send initial state and bitmap
+4. Worker responds with INITIALIZED
+
+### Cleanup
+
+- Terminate worker on component unmount
+- Reset initialization flags
+- Clear worker references
+
+## State Synchronization
+
+- Worker maintains authoritative app state
+- Settings changes flow: UI → Message → Worker → State Update
+- Worker broadcasts state changes back to main thread
+- Use [AppContext](mdc:src/contexts/AppContext.ts) for read-only UI state

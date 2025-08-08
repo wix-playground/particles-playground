@@ -1,92 +1,74 @@
-import {useCallback, useContext} from 'react';
-import {StartPosition} from './StartPosition';
-import {getResizeParticleRadiusMessage} from '../../interfaces';
+import {useContext} from 'react';
 import {AppContext} from '../../contexts/AppContext';
-import {WorkerContext} from '../../contexts/WorkerContext';
-import {FunctionSelectorModal} from '../FunctionSelectorModal/FunctionSelectorModal';
-import {editor} from 'monaco-editor';
-import {MultiColorPicker} from './MultiColorPicker';
-import {PulseColorSettings} from './PulseColorSettings';
-import {TimeDistortionSettings} from './TimeDistortionSettings';
-import {ElasticPlopSettings} from './ElasticPlopSettings';
 import {TextSettings} from './TextSettings';
-import {AnimationDurationSlider} from './AnimationDurationSlider';
-import {BubbleEffectToggle} from './BubbleEffectToggle';
-import {ImageParticleToggle} from './ImageParticleToggle';
+import {CollapsibleSettingsGroup} from './components/CollapsibleSettingsGroup';
+import {ParticleSettings} from './components/ParticleSettings';
+import {ColorSettings} from './components/ColorSettings';
+import {AnimationSettings} from './components/AnimationSettings';
+import {EffectSettings} from './components/EffectSettings';
+import {useCollapsibleState} from './hooks/useCollapsibleState';
+import styles from './Settings.module.css';
 
-export const Settings = ({
-  editorRef,
-}: {
-  editorRef: React.RefObject<editor.IStandaloneCodeEditor | null>;
-}) => {
-  const worker = useContext(WorkerContext);
+export const Settings = () => {
   const appProps = useContext(AppContext);
 
-  const handleResizeParticleRadius = useCallback(
-    (radius: number) => {
-      if (worker) worker.postMessage(getResizeParticleRadiusMessage(radius));
-    },
-    [worker]
-  );
+  // Initialize collapsible state with some sections expanded by default
+  const {isExpanded, toggle} = useCollapsibleState({
+    particles: true,
+    colors: false,
+    animation: false,
+    effects: true,
+    text: false
+  });
 
   if (!appProps) {
-    return;
+    return null;
   }
 
   return (
-    <div className="card">
-      <span className="cardTitle">Settings</span>
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'start',
-          gap: '4px',
-          flexDirection: 'column',
-        }}
-      >
-        <div style={{display: 'flex', alignItems: 'center', gap: '4px'}}>
-          Particle radius:
-          <input
-            className="userInput"
-            style={{maxWidth: '60px'}}
-            value={appProps.particleRadius}
-            type="number"
-            onChange={(e) => {
-              const numberValue = Number(e.target.value);
-              if (!Number.isNaN(numberValue) && numberValue > 0) {
-                handleResizeParticleRadius(numberValue);
-              }
-            }}
-          />
-          <BubbleEffectToggle />
-          <ImageParticleToggle />
-        </div>
-        <MultiColorPicker />
-        <StartPosition />
-        <AnimationDurationSlider />
-        <div className="card">
-          <span className="innerTitle">Predefined movement functions</span>
-          <FunctionSelectorModal
-            onSelect={() => {
-              if (editorRef.current) {
-                editorRef.current
-                  .getAction('editor.action.formatDocument')
-                  ?.run();
-              }
-            }}
-          />
-        </div>
+    <div className={styles.settings}>
+      <h2 className={styles.settings__title}>Settings</h2>
+      <div className={styles.settings__content}>
 
-        {appProps.selectedMovementFunction === 'pulseColorCycle' && (
-          <PulseColorSettings />
-        )}
-        {appProps.selectedMovementFunction === 'timeDistortion' && (
-          <TimeDistortionSettings />
-        )}
-        {appProps.selectedMovementFunction === 'elasticPlop' && (
-          <ElasticPlopSettings />
-        )}
-        <TextSettings />
+        <CollapsibleSettingsGroup
+          title="Effects"
+          isExpanded={isExpanded('effects')}
+          onToggle={() => toggle('effects')}
+        >
+          <EffectSettings />
+        </CollapsibleSettingsGroup>
+
+        <CollapsibleSettingsGroup
+          title="Particles"
+          isExpanded={isExpanded('particles')}
+          onToggle={() => toggle('particles')}
+        >
+          <ParticleSettings />
+        </CollapsibleSettingsGroup>
+
+        <CollapsibleSettingsGroup
+          title="Fill colors"
+          isExpanded={isExpanded('colors')}
+          onToggle={() => toggle('colors')}
+        >
+          <ColorSettings />
+        </CollapsibleSettingsGroup>
+
+        <CollapsibleSettingsGroup
+          title="Animation"
+          isExpanded={isExpanded('animation')}
+          onToggle={() => toggle('animation')}
+        >
+          <AnimationSettings />
+        </CollapsibleSettingsGroup>
+        <CollapsibleSettingsGroup
+          title="Text"
+          isExpanded={isExpanded('text')}
+          onToggle={() => toggle('text')}
+        >
+          <TextSettings />
+        </CollapsibleSettingsGroup>
+
       </div>
     </div>
   );

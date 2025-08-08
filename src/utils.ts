@@ -2,7 +2,9 @@ import {
   Coordinates,
   Dimensions,
   FontState,
+  Particle,
   StartPositionType,
+  TextBoundaries,
 } from './interfaces';
 
 export const getValidImageBlocks = (
@@ -157,3 +159,33 @@ export const getStartCoordinatesConfig = ({
 export const getFontString = (font: FontState) =>
   `${font.italic ? 'italic ' : ''}${font.weight} ${font.fontSize}px '${font.fontFamily
   }'`;
+
+export const getTextBoundaries = (
+  particles: Array<Particle>,
+  particleRadius: number,
+): TextBoundaries => {
+  if (particles.length === 0) {
+    return {width: 0, height: 0, minX: 0, minY: 0, maxX: 0, maxY: 0};
+  }
+
+  let minX = Infinity;
+  let minY = Infinity;
+  let maxX = -Infinity;
+  let maxY = -Infinity;
+
+  particles.forEach(particle => {
+    minX = Math.min(minX, particle.targetX);
+    minY = Math.min(minY, particle.targetY);
+    maxX = Math.max(maxX, particle.targetX + particleRadius);
+    maxY = Math.max(maxY, particle.targetY + particleRadius);
+  });
+
+  return {
+    minX,
+    minY,
+    maxX,
+    maxY,
+    width: maxX - minX,
+    height: maxY - minY,
+  };
+};

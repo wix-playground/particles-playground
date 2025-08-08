@@ -1,3 +1,5 @@
+import {EffectType, EffectConfigurations} from "./animation-utils/interfaces";
+
 export interface Coordinates {
   x: number;
   y: number;
@@ -49,10 +51,11 @@ export type StartPositionType =
 export enum Action {
   INITIALIZE = 'INITIALIZE',
   PLAY = 'PLAY',
-  RESET = 'RESET',
   RESIZE_PARTICLE_RADIUS = 'RESIZE_PARTICLE_RADIUS',
   UPDATE_START_POSITION = 'UPDATE_START_POSITION',
   UPDATE_SELECTED_MOVEMENT_FUNCTION = 'UPDATE_SELECTED_MOVEMENT_FUNCTION',
+  UPDATE_SELECTED_EFFECT = 'UPDATE_SELECTED_EFFECT',
+  UPDATE_EFFECT_CONFIGURATION = 'UPDATE_EFFECT_CONFIGURATION',
   UPDATE_BITMAP = 'UPDATE_BITMAP',
   UPDATE_TEXT = 'UPDATE_TEXT',
   UPDATE_FONT = 'UPDATE_FONT',
@@ -95,11 +98,6 @@ export const getInitializeMessage = (payload: InitializeMessagePayload) => ({
 
 export const getPlayMessage = () => ({
   type: Action.PLAY as const,
-  payload: undefined,
-});
-
-export const getResetMessage = () => ({
-  type: Action.RESET as const,
   payload: undefined,
 });
 
@@ -151,13 +149,27 @@ export const getUpdateEnableImageParticlesMessage = (payload: boolean) => ({
   payload,
 });
 
+export const getUpdateSelectedEffectMessage = (payload: EffectType | null) => ({
+  type: Action.UPDATE_SELECTED_EFFECT as const,
+  payload,
+});
+
+export const getUpdateEffectConfigurationMessage = (payload: {
+  effectType: EffectType;
+  configuration: EffectConfigurations[EffectType];
+}) => ({
+  type: Action.UPDATE_EFFECT_CONFIGURATION as const,
+  payload,
+});
+
 export type MainThreadMessage =
   | ReturnType<typeof getUpdateBitmapMessage>
   | ReturnType<typeof getUpdateTextMessage>
   | ReturnType<typeof getUpdateSelectedMovementFunctionMessage>
+  | ReturnType<typeof getUpdateSelectedEffectMessage>
+  | ReturnType<typeof getUpdateEffectConfigurationMessage>
   | ReturnType<typeof getUpdateStartPositionMessage>
   | ReturnType<typeof getResizeParticleRadiusMessage>
-  | ReturnType<typeof getResetMessage>
   | ReturnType<typeof getPlayMessage>
   | ReturnType<typeof getInitializeMessage>
   | ReturnType<typeof getUpdateFontMessage>
@@ -191,6 +203,13 @@ export interface AppProps {
   startPosition: StartPositionType;
   movementFunctionCode: string;
   selectedMovementFunction: string;
+  selectedEffect: EffectType | null;
+  effectConfigurations: {
+    SUPER_SWIRL: EffectConfigurations['SUPER_SWIRL'];
+    BUILD: EffectConfigurations['BUILD'];
+    OPPENHEIMER: EffectConfigurations['OPPENHEIMER'];
+    SCANNING: EffectConfigurations['SCANNING'];
+  };
   particleRadius: number;
   text: string;
   font: FontState;
@@ -199,3 +218,10 @@ export interface AppProps {
   enableBubbles: boolean;
   enableImageParticles: boolean;
 }
+
+export type TextBoundaries = Dimensions & {
+  minX: number;
+  minY: number;
+  maxX: number;
+  maxY: number;
+};

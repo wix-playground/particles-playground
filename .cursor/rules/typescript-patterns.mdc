@@ -1,0 +1,55 @@
+---
+globs: *.ts,*.tsx
+---
+
+# TypeScript Conventions & Patterns
+
+## Type Organization
+
+### Interface Definitions
+
+- Core types in [interfaces.ts](mdc:src/interfaces.ts) for app-wide usage
+- Animation-specific types in [animation-utils/interfaces.ts](mdc:src/animation-utils/interfaces.ts)
+- Use `interface` for object shapes, `type` for unions/computed types
+
+### Naming Conventions
+
+- **Interfaces**: PascalCase (`Particle`, `AppProps`, `FontState`)
+- **Enums**: PascalCase with ALL_CAPS values (`Action.UPDATE_TEXT`)
+- **Types**: PascalCase for aliases (`EffectType`, `MovementFunction`)
+- **Constants**: ALL_CAPS in [constants.ts](mdc:src/constants.ts)
+
+## Message Pattern
+
+All worker communication follows a structured pattern:
+
+```typescript
+export const getUpdateXMessage = (payload: Type) => ({
+  type: Action.UPDATE_X as const,
+  payload,
+});
+```
+
+## Type Safety Patterns
+
+### Effect Configurations
+
+- Use mapped types for effect configs: `EffectConfigurations[T]`
+- Factory pattern with type constraints: `EffectOption<T extends EffectType>`
+
+### Strict Typing
+
+- Always use `as const` for action types
+- Prefer union types over string literals
+- Use generic constraints for better type inference
+
+## Component Props
+
+- Extract complex prop types to interfaces
+- Use React's built-in types: `React.FC`, `useRef<Type>(null)`
+- Context typing: `useContext(AppContext)` with null checks
+
+## Data Test IDs
+
+- Define all test IDs in [constants.ts](mdc:src/constants.ts) under `DATA_TEST_IDS`
+- Use consistent naming: COMPONENT_ELEMENT_ACTION format

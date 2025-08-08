@@ -1,0 +1,75 @@
+---
+description: 'Animation and effects system for particle movements'
+---
+
+# Particle Animation & Effects System
+
+## Effect Architecture
+
+### Effect Types
+
+Defined in [animation-utils/interfaces.ts](mdc:src/animation-utils/interfaces.ts):
+
+### Effect Configuration Pattern
+
+Each effect follows this structure:
+
+```typescript
+export interface EffectOption<T extends EffectType> {
+  factory: (config: EffectConfigurations[T]) => MovementFunction;
+  defaultConfig: EffectConfigurations[T];
+}
+```
+
+## Movement Functions
+
+### Function Signature
+
+```typescript
+type MovementFunction = (
+  particle: Particle & {[key: string]: any},
+  animationProgress: number,
+  textBoundaries: TextBoundaries
+) => void;
+```
+
+### Core Implementation
+
+- Located in [animation-config.ts](mdc:src/animation-utils/animation-config.ts)
+- Functions modify particle properties directly (mutable)
+- Use `animationProgress` (0-1) for timing calculations
+- Access `textBoundaries` for spatial constraints
+
+### Development Pattern
+
+1. Define an effect type.
+2. Create an effect option with new EffectType.
+
+```typescript
+export interface EffectOption<T extends EffectType> {
+  factory: (config: EffectConfigurations[T]) => MovementFunction;
+  defaultConfig: EffectConfigurations[T];
+}
+```
+
+3. Create a function in the factory with particle mutation logic
+4. Ensure particles reach targets within animation duration
+5. Add effect configuration, up to 5 configurable variables which makes impact on the animation
+6. Add default configuration.
+7. Create UI settings controls for configurable properties, add reasonable presets.
+
+## Particle Properties
+
+### Core Properties
+
+From [interfaces.ts](mdc:src/interfaces.ts) `Particle`:
+
+- Position: `x`, `y`, `targetX`, `targetY`, `initialX`, `initialY`
+- Visual: `scale`, `opacity`, `color`
+- Animation: `revealProgress`, `revealThreshold`
+
+### Dynamic Properties
+
+- Add custom properties: `particle.customProp = value`
+- Use for effect-specific state management
+- Clean up not required (recreated each animation)

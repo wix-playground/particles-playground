@@ -1,0 +1,43 @@
+---
+alwaysApply: true
+---
+
+# Particles Playground - Project Structure & Architecture
+
+This is a **particles effect to text playground** built with React, TypeScript, and Web Workers. The architecture enables complex particle animations which form text while keeping the main thread responsive.
+
+## Core Architecture
+
+- **Main Thread**: UI, settings, and canvas management via [App.tsx](mdc:src/App.tsx)
+- **Web Worker**: Particle simulation and rendering via [worker.ts](mdc:src/worker.ts)
+- **Communication**: Structured message passing via [interfaces.ts](mdc:src/interfaces.ts)
+
+## Key File Structure
+
+### Animation System
+
+- [animation-utils/interfaces.ts](mdc:src/animation-utils/interfaces.ts) - Effect types and configurations
+- [animation-utils/animation-config.ts](mdc:src/animation-utils/animation-config.ts) - Movement functions and effect implementations
+
+### Components Structure
+
+- [components/Settings/](mdc:src/components/Settings/) - Collapsible settings panels
+- [components/Editor/](mdc:src/components/Editor/) - Monaco editor for custom movement functions
+- [components/Settings/components/](mdc:src/components/Settings/components/) - Individual setting controls
+
+### Core Data Flow
+
+1. Settings changes → [AppContext](mdc:src/contexts/AppContext.ts) → Worker messages
+2. Worker processes particles → Canvas rendering
+3. Font/text changes → [useImageLoader](mdc:src/hooks/useImageLoader.ts) → Bitmap generation
+
+## Constants & Configuration
+
+- [constants.ts](mdc:src/constants.ts) - Default values, AI prompts, test IDs
+- [interfaces.ts](mdc:src/interfaces.ts) - Type definitions and message creators
+
+## Entry Points
+
+- [main.tsx](mdc:src/main.tsx) - React app entry
+- [App.tsx](mdc:src/App.tsx) - Main application component
+- [worker.ts](mdc:src/worker.ts) - Web Worker entry point

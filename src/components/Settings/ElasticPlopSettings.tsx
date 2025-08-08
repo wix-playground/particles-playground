@@ -2,7 +2,6 @@ import {useCallback, useContext, useState} from 'react';
 import {AppContext} from '../../contexts/AppContext';
 import {WorkerContext} from '../../contexts/WorkerContext';
 import {Action} from '../../interfaces';
-import './ElasticPlopSettings.css';
 
 // Default values from the movement function
 const DEFAULT_ELASTICITY_MIN = 0.6;

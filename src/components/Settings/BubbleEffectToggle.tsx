@@ -2,6 +2,7 @@ import {useCallback, useContext} from 'react';
 import {getUpdateEnableBubblesMessage} from '../../interfaces';
 import {WorkerContext} from '../../contexts/WorkerContext';
 import {AppContext} from '../../contexts/AppContext';
+import styles from './Settings.module.css';
 
 export const BubbleEffectToggle = () => {
   const worker = useContext(WorkerContext);
@@ -19,17 +20,15 @@ export const BubbleEffectToggle = () => {
   if (!appProps) return null;
 
   return (
-    <div className="settings-item">
-      <div className="settings-item-header">
-        <span>Bubble Effect</span>
-        <input
-          className="userInput"
-          type="checkbox"
-          id="bubble-toggle"
-          checked={appProps.enableBubbles}
-          onChange={handleToggleBubbles}
-        />
-      </div>
-    </div>
+    <label className={styles['setting-toggle']}>
+      <span>Bubble Effect</span>
+      <input
+        className={styles['setting-checkbox']}
+        type="checkbox"
+        id="bubble-toggle"
+        checked={appProps.enableBubbles}
+        onChange={handleToggleBubbles}
+      />
+    </label>
   );
 };

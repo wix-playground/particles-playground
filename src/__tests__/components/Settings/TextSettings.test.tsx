@@ -25,6 +25,13 @@ describe('TextSettings', () => {
       startPosition: 'random',
       movementFunctionCode: '',
       selectedMovementFunction: '',
+      selectedEffect: null,
+      effectConfigurations: {
+        SUPER_SWIRL: {swirlTurns: 2, spiralDirection: 1, easingType: 'ease-in-out'},
+        BUILD: {horizontalPhaseEnd: 0.4, bounceEndPoint: 1, verticalCompressionFactor: 0.45, decompressionStart: 0.6, decompressionEasing: 1.1, horizontalScaleShrink: 0.2, verticalScaleShrink: 0.1, scalingBoost: 0.3, scalingPhaseEnd: 0.5, bouncyIntensity: 10, bouncyOffset: 0.75, startPosition: 'center'},
+        OPPENHEIMER: {windStrength: 1.0, turbulenceScale: 60, oscillationAmount: 1.5, settlingSpeed: 1.5, particleWeight: 0.7},
+        SCANNING: {oscillationFrequency: 3, settlementThreshold: 12, scanningRange: 30, passDistribution: 0.83, settlementTiming: 'distributed'}
+      },
       particleRadius: 2,
       text: 'Test',
       particleColors: ['#000000'],
@@ -80,6 +87,13 @@ describe('TextSettings', () => {
       startPosition: 'random',
       movementFunctionCode: '',
       selectedMovementFunction: '',
+      selectedEffect: null,
+      effectConfigurations: {
+        SUPER_SWIRL: {swirlTurns: 2, spiralDirection: 1, easingType: 'ease-in-out'},
+        BUILD: {horizontalPhaseEnd: 0.4, bounceEndPoint: 1, verticalCompressionFactor: 0.45, decompressionStart: 0.6, decompressionEasing: 1.1, horizontalScaleShrink: 0.2, verticalScaleShrink: 0.1, scalingBoost: 0.3, scalingPhaseEnd: 0.5, bouncyIntensity: 10, bouncyOffset: 0.75, startPosition: 'center'},
+        OPPENHEIMER: {windStrength: 1.0, turbulenceScale: 60, oscillationAmount: 1.5, settlingSpeed: 1.5, particleWeight: 0.7},
+        SCANNING: {oscillationFrequency: 3, settlementThreshold: 12, scanningRange: 30, passDistribution: 0.83, settlementTiming: 'distributed'}
+      },
       particleRadius: 2,
       text: 'Test',
       particleColors: ['#000000'],
