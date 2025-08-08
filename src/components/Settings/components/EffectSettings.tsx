@@ -7,6 +7,7 @@ import {getUpdateSelectedEffectMessage} from '../../../interfaces';
 import {SuperSwirlSettings} from './SuperSwirlSettings';
 import {BuildEffectSettings} from './BuildEffectSettings';
 import {OppenheimerSettings} from './OppenheimerSettings';
+import {ScanningSettings} from './ScanningSettings';
 import styles from '../Settings.module.css';
 
 export const EffectSettings: React.FC = () => {
@@ -54,6 +55,7 @@ export const EffectSettings: React.FC = () => {
                 {effect.id === 'SUPER_SWIRL' && 'Spiral animation with configurable turns'}
                 {effect.id === 'BUILD' && 'Multi-phase build animation with bouncy effects'}
                 {effect.id === 'OPPENHEIMER' && 'Wind-driven particle animation with turbulence effects'}
+                {effect.id === 'SCANNING' && 'Oscillating scan line that settles particles progressively'}
               </div>
             </div>
           </button>
@@ -76,6 +78,12 @@ export const EffectSettings: React.FC = () => {
       {appProps.selectedEffect === 'OPPENHEIMER' && (
         <div className={styles['setting-row']}>
           <OppenheimerSettings />
+        </div>
+      )}
+
+      {appProps.selectedEffect === 'SCANNING' && (
+        <div className={styles['setting-row']}>
+          <ScanningSettings />
         </div>
       )}
     </div>

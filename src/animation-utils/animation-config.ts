@@ -336,33 +336,6 @@ const oppenheimerEffectOption: EffectOption<'OPPENHEIMER'> = {
         particle.opacity = particle.windProps.originalOpacity;
       }
     }
-
-    // Gentle snow
-    // animationFunction(particle, progress, {
-    // windStrength: 0.3,
-    // turbulenceScale: 15,
-    // oscillationAmount: 0.8,
-    // settlingSpeed: 0.8,
-    // particleWeight: 1.2
-    // });
-
-    // // Blizzard
-    // animationFunction(particle, progress, {
-    // windStrength: 1.0,
-    // turbulenceScale: 60,
-    // oscillationAmount: 1.5,
-    // settlingSpeed: 1.5,
-    // particleWeight: 0.7
-    // });
-
-    // // Magical sparkles
-    // animationFunction(particle, progress, {
-    // windStrength: 0.4,
-    // turbulenceScale: 5,
-    // oscillationAmount: 2.0,
-    // settlingSpeed: 0.6,
-    // particleWeight: 0.5
-    // });
   },
   defaultConfig: {
     windStrength: 1.0,
@@ -376,8 +349,7 @@ const oppenheimerEffectOption: EffectOption<'OPPENHEIMER'> = {
 const scanningEffectOption: EffectOption<'SCANNING'> = {
   factory: (config) => {
     return (particle, progress, textBoundaries) => {
-      const { } = config
-      const oscillationFrequency = 3; // Number of complete back-and-forth cycles
+      const {oscillationFrequency, settlementThreshold, scanningRange, passDistribution, settlementTiming} = config
       const totalPasses = oscillationFrequency * 2; // Each cycle has 2 passes (left-to-right and right-to-left)
 
       // One-time initialization
@@ -389,10 +361,24 @@ const scanningEffectOption: EffectOption<'SCANNING'> = {
         }, 0);
         const particleId = Math.abs(uuidHash);
 
-        // Assign each particle to a specific pass (1 to totalPasses-1)
-        // Reserve the final pass to ensure all particles settle before compression ends
-        const usablePasses = totalPasses - 1; // Use only first 5 passes
-        const assignedPass = (particleId % usablePasses) + 1;
+        // Assign each particle to a specific pass based on passDistribution
+        const usablePasses = Math.max(1, Math.floor(totalPasses * passDistribution));
+        let assignedPass: number;
+
+        // Apply settlement timing strategy
+        if (settlementTiming === 'early') {
+          // Most particles settle in first third of passes
+          const earlyPasses = Math.max(1, Math.floor(usablePasses / 3));
+          assignedPass = (particleId % earlyPasses) + 1;
+        } else if (settlementTiming === 'late') {
+          // Most particles settle in last third of passes
+          const latePasses = Math.max(1, Math.floor(usablePasses / 3));
+          const startPass = usablePasses - latePasses + 1;
+          assignedPass = (particleId % latePasses) + startPass;
+        } else {
+          // Distributed across all usable passes
+          assignedPass = (particleId % usablePasses) + 1;
+        }
 
         particle.animation = {
           settled: false,
@@ -432,8 +418,8 @@ const scanningEffectOption: EffectOption<'SCANNING'> = {
       }
 
       // Map sine wave (-1 to 1) to actual X positions
-      const leftEdge = textBoundaries.minX - 30;
-      const rightEdge = textBoundaries.maxX + 30;
+      const leftEdge = textBoundaries.minX - scanningRange;
+      const rightEdge = textBoundaries.maxX + scanningRange;
       const cutX =
         leftEdge + ((oscillationProgress + 1) / 2) * (rightEdge - leftEdge);
 
@@ -442,12 +428,11 @@ const scanningEffectOption: EffectOption<'SCANNING'> = {
 
       // Check if cut is passing over this particle's target location
       const distanceFromTarget = Math.abs(particle.x - particle.targetX);
-      const passThreshold = 12; // How close the cut needs to be to settle a particle
 
       // Settle particle if we're on its assigned pass and the cut is close enough
       if (
         particle.animation.currentPass >= particle.animation.assignedPass &&
-        distanceFromTarget <= passThreshold
+        distanceFromTarget <= settlementThreshold
       ) {
         particle.x = particle.targetX;
         particle.y = particle.targetY;
@@ -456,10 +441,11 @@ const scanningEffectOption: EffectOption<'SCANNING'> = {
     }
   },
   defaultConfig: {
-    // scanSpeed: 1,
-    // scanDirection: 1,
-    // scanIntensity: 1,
-    // scanOffset: 1,
+    oscillationFrequency: 3,
+    settlementThreshold: 12,
+    scanningRange: 30,
+    passDistribution: 0.85,
+    settlementTiming: 'distributed'
   }
 }
 

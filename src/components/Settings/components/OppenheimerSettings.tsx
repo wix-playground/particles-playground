@@ -2,7 +2,7 @@ import React, {useContext, useState, useCallback, useEffect} from 'react';
 import {AppContext} from '../../../contexts/AppContext';
 import {WorkerContext} from '../../../contexts/WorkerContext';
 import {getUpdateEffectConfigurationMessage} from '../../../interfaces';
-import {SettingsSlider} from '../common';
+import {SettingsSlider, Presets, type PresetOption} from '../common';
 import styles from '../Settings.module.css';
 import {effectOptions} from '../../../animation-utils/animation-config';
 
@@ -11,6 +11,40 @@ export const OppenheimerSettings: React.FC = () => {
   const appProps = useContext(AppContext);
 
   const [config, setConfig] = useState(effectOptions.OPPENHEIMER.defaultConfig);
+
+  // Preset configurations
+  const presets: PresetOption<typeof config>[] = [
+    {
+      name: 'Gentle Snow',
+      config: {
+        windStrength: 0.3,
+        turbulenceScale: 15,
+        oscillationAmount: 0.8,
+        settlingSpeed: 0.8,
+        particleWeight: 1.2
+      }
+    },
+    {
+      name: 'Blizzard',
+      config: {
+        windStrength: 1.0,
+        turbulenceScale: 60,
+        oscillationAmount: 1.5,
+        settlingSpeed: 1.5,
+        particleWeight: 0.7
+      }
+    },
+    {
+      name: 'Magical Sparkles',
+      config: {
+        windStrength: 0.4,
+        turbulenceScale: 5,
+        oscillationAmount: 2.0,
+        settlingSpeed: 0.6,
+        particleWeight: 0.5
+      }
+    }
+  ];
 
   // Initialize with current app config
   useEffect(() => {
@@ -85,48 +119,10 @@ export const OppenheimerSettings: React.FC = () => {
         onChange={(value) => handleValueChange('particleWeight', value)}
       />
 
-      {/* Preset Buttons */}
-      <div className={styles['setting-row']}>
-        <label className={styles['setting-label']}>Presets:</label>
-        <div className={styles['settings-grid']} style={{gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px'}}>
-          <button
-            className={styles['setting-button']}
-            onClick={() => updateConfig({
-              windStrength: 0.3,
-              turbulenceScale: 15,
-              oscillationAmount: 0.8,
-              settlingSpeed: 0.8,
-              particleWeight: 1.2
-            })}
-          >
-            Gentle Snow
-          </button>
-          <button
-            className={styles['setting-button']}
-            onClick={() => updateConfig({
-              windStrength: 1.0,
-              turbulenceScale: 60,
-              oscillationAmount: 1.5,
-              settlingSpeed: 1.5,
-              particleWeight: 0.7
-            })}
-          >
-            Blizzard
-          </button>
-          <button
-            className={styles['setting-button']}
-            onClick={() => updateConfig({
-              windStrength: 0.4,
-              turbulenceScale: 5,
-              oscillationAmount: 2.0,
-              settlingSpeed: 0.6,
-              particleWeight: 0.5
-            })}
-          >
-            Magical Sparkles
-          </button>
-        </div>
-      </div>
+      <Presets
+        presets={presets}
+        onPresetSelect={updateConfig}
+      />
     </div>
   );
 };

@@ -56,10 +56,11 @@ export type EffectConfigurations = {
     particleWeight: number,
   }
   SCANNING: {
-    // scanSpeed: number,
-    // scanDirection: number,
-    // scanIntensity: number,
-    // scanOffset: number,
+    oscillationFrequency: number, // Number of complete back-and-forth scanning cycles (default: 3)
+    settlementThreshold: number, // How close the scan line needs to be to settle a particle (default: 12)
+    scanningRange: number, // How far beyond text boundaries the scan extends in pixels (default: 30)
+    passDistribution: number, // Fraction of total passes used for particle distribution (default: 0.83, meaning 5/6 passes)
+    settlementTiming: 'early' | 'distributed' | 'late', // When particles settle: early passes, distributed across passes, or late passes
   }
 }
 
