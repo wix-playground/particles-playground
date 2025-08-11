@@ -8,6 +8,7 @@ import {SuperSwirlSettings} from './SuperSwirlSettings';
 import {BuildEffectSettings} from './BuildEffectSettings';
 import {OppenheimerSettings} from './OppenheimerSettings';
 import {ScanningSettings} from './ScanningSettings';
+import {ExplosionSettings} from './ExplosionSettings';
 import {SettingsButton} from '../common';
 import styles from '../Settings.module.css';
 
@@ -56,6 +57,7 @@ export const EffectSettings: React.FC = () => {
                 {effect.id === 'BUILD' && 'Multi-phase build animation with bouncy effects'}
                 {effect.id === 'OPPENHEIMER' && 'Wind-driven particle animation with turbulence effects'}
                 {effect.id === 'SCANNING' && 'Oscillating scan line that settles particles progressively'}
+                {effect.id === 'EXPLOSION' && '3D explosion with configurable depth and orbital settling'}
               </div>
             </div>
           </SettingsButton>
@@ -84,6 +86,12 @@ export const EffectSettings: React.FC = () => {
       {appProps.selectedEffect === 'SCANNING' && (
         <div className={styles['setting-row']}>
           <ScanningSettings />
+        </div>
+      )}
+
+      {appProps.selectedEffect === 'EXPLOSION' && (
+        <div className={styles['setting-row']}>
+          <ExplosionSettings />
         </div>
       )}
     </div>

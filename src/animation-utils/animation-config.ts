@@ -3,9 +3,9 @@ import {EffectOption, EffectTypes} from "./interfaces";
 
 const superSwirlEffectOption: EffectOption<'SUPER_SWIRL'> = {
   factory: (config) => {
-    return (particle, animationProgress) => {
+    return ({particle, progress}) => {
       const {swirlTurns, spiralDirection, easingType} = config;
-      const t = Math.min(animationProgress, 1);
+      const t = Math.min(progress, 1);
 
       const ease = easingConfig[easingType](t);
 
@@ -58,7 +58,7 @@ const superSwirlEffectOption: EffectOption<'SUPER_SWIRL'> = {
 
 const buildEffectOption: EffectOption<'BUILD'> = {
   factory: (config) => {
-    return (particle, animationProgress) => {
+    return ({particle, progress}) => {
       const {horizontalPhaseEnd, bounceEndPoint, verticalCompressionFactor, decompressionStart, decompressionEasing, horizontalScaleShrink, verticalScaleShrink, scalingBoost, scalingPhaseEnd, bouncyIntensity, bouncyOffset} = config;
 
       // --- Initialization ---
@@ -68,9 +68,6 @@ const buildEffectOption: EffectOption<'BUILD'> = {
           originalOpacity: particle.opacity,
         };
       }
-
-      // --- Core Calculation ---
-      const progress = animationProgress;
 
       // --- Animation Finalization ---
       if (progress >= 1) {
@@ -159,7 +156,7 @@ const buildEffectOption: EffectOption<'BUILD'> = {
 
 const oppenheimerEffectOption: EffectOption<'OPPENHEIMER'> = {
   factory: (config) => {
-    return (particle, progress, _textBoundaries) => {
+    return ({particle, progress}) => {
       // Default configuration
       const {
         windStrength,        // 0-1: Overall wind intensity
@@ -348,7 +345,7 @@ const oppenheimerEffectOption: EffectOption<'OPPENHEIMER'> = {
 
 const scanningEffectOption: EffectOption<'SCANNING'> = {
   factory: (config) => {
-    return (particle, progress, textBoundaries) => {
+    return ({particle, progress, textBoundaries}) => {
       const {oscillationFrequency, settlementThreshold, scanningRange, passDistribution, settlementTiming} = config
       const totalPasses = oscillationFrequency * 2; // Each cycle has 2 passes (left-to-right and right-to-left)
 
@@ -449,9 +446,121 @@ const scanningEffectOption: EffectOption<'SCANNING'> = {
   }
 }
 
+const explosionEffectOption: EffectOption<'EXPLOSION'> = {
+  factory: (config) => {
+    return ({particle, progress, canvasDimensions}) => {
+      const {explosionStrength, deconstructionPhase, orbitalRadius, depthOffset} = config;
+      if (!particle.isInitialized) {
+        particle.isInitialized = true;
+
+        // 2. Define the DECONSTRUCTION (explosion) vector.
+        // Each particle shatters away from its starting point into deep space.
+        const explosionDistance = explosionStrength + Math.random() * explosionStrength * 0.5;
+        const angle = Math.random() * Math.PI * 2;
+        const phi = Math.acos(Math.random() * 2 - 1);
+        particle.explodedPos = {
+          x:
+            particle.initialX +
+            Math.cos(angle) * Math.sin(phi) * explosionDistance,
+          y:
+            particle.initialY +
+            Math.sin(angle) * Math.sin(phi) * explosionDistance,
+          z: depthOffset + Math.cos(phi) * explosionDistance, // Explode away from the viewer
+        };
+
+        // 3. Store final target position relative to the center.
+        particle.finalPos = {
+          x: particle.targetX,
+          y: particle.targetY,
+          z: 0,
+        };
+      }
+
+      let currentPos;
+      let baseOpacity = 1;
+
+      // --- ACT I & II: Deconstruction and The Pull ---
+      const deconstructionPhaseEnd = deconstructionPhase;
+      if (progress < deconstructionPhaseEnd) {
+        // Phase 1: Explode outwards from initial position.
+        const phaseProgress = progress / deconstructionPhaseEnd;
+        const easedPhaseProgress = easingConfig['ease-out-quart'](phaseProgress);
+        currentPos = {
+          x:
+            particle.initialX +
+            (particle.explodedPos.x - particle.initialX) * easedPhaseProgress,
+          y:
+            particle.initialY +
+            (particle.explodedPos.y - particle.initialY) * easedPhaseProgress,
+          z: 0 + (particle.explodedPos.z - 0) * easedPhaseProgress,
+        };
+        // Glow brightly on explosion
+        baseOpacity = 1 + 1.5 * Math.sin(phaseProgress * Math.PI);
+      } else {
+        // Phase 2 & 3: Fly from the exploded point to the final target.
+        const phaseProgress =
+          (progress - deconstructionPhaseEnd) / (1 - deconstructionPhaseEnd);
+        const easedPhaseProgress = easingConfig['ease-in-out-quint'](phaseProgress);
+        currentPos = {
+          x:
+            particle.explodedPos.x +
+            (particle.finalPos.x - particle.explodedPos.x) * easedPhaseProgress,
+          y:
+            particle.explodedPos.y +
+            (particle.finalPos.y - particle.explodedPos.y) * easedPhaseProgress,
+          z:
+            particle.explodedPos.z +
+            (particle.finalPos.z - particle.explodedPos.z) * easedPhaseProgress,
+        };
+        // Glow during high-speed travel
+        baseOpacity = 1 + 0.8 * Math.sin(phaseProgress * Math.PI);
+
+        // --- ACT III: Orbital Settling ---
+        const settleProgress = Math.max(0, (phaseProgress - 0.7) / 0.3);
+        if (settleProgress > 0) {
+          const settleDecay = 1 - settleProgress; // The wobble shrinks over time.
+          const settleAngle = settleProgress * Math.PI * 4; // 2 full orbital wobbles.
+          const settleRadius = orbitalRadius * settleDecay * settleDecay;
+          currentPos.x += Math.cos(settleAngle) * settleRadius;
+          currentPos.y += Math.sin(settleAngle) * settleRadius;
+        }
+      }
+
+      // --- Final 3D Projection ---
+      const perspective = canvasDimensions.width * 1.2;
+      const projectionScale = perspective / (perspective - currentPos.z);
+
+      particle.x =
+        (currentPos.x - canvasDimensions.width / 2) * projectionScale +
+        canvasDimensions.width / 2;
+      particle.y =
+        (currentPos.y - canvasDimensions.height / 2) * projectionScale +
+        canvasDimensions.height / 2;
+      particle.scale = Math.max(0, projectionScale);
+      particle.opacity = Math.max(0, Math.min(1, projectionScale)) * baseOpacity;
+
+      // Snap to final state at the very end to guarantee perfect alignment.
+      if (progress >= 1) {
+        particle.x = particle.targetX;
+        particle.y = particle.targetY;
+        particle.scale = 1;
+        particle.opacity = 1;
+      }
+    };
+
+  },
+  defaultConfig: {
+    explosionStrength: 1000,
+    deconstructionPhase: 0.4,
+    orbitalRadius: 15,
+    depthOffset: -500,
+  }
+}
+
 export const effectOptions = {
   [EffectTypes.SUPER_SWIRL]: superSwirlEffectOption,
   [EffectTypes.BUILD]: buildEffectOption,
   [EffectTypes.OPPENHEIMER]: oppenheimerEffectOption,
   [EffectTypes.SCANNING]: scanningEffectOption,
+  [EffectTypes.EXPLOSION]: explosionEffectOption,
 } as const;

@@ -9,7 +9,7 @@
 
 .app-container {
   display: grid;
-  grid-template-columns: 320px 1fr;
+  grid-template-columns: 380px 1fr;
   grid-template-rows: 1fr auto;
   gap: 1.5rem;
   width: 100%;
@@ -151,7 +151,7 @@
 /* Responsive Design */
 @media (max-width: 1200px) {
   .app-container {
-    grid-template-columns: 280px 1fr;
+    grid-template-columns: 340px 1fr;
     gap: 1rem;
   }
 }

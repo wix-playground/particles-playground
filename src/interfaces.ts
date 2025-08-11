@@ -209,6 +209,7 @@ export interface AppProps {
     BUILD: EffectConfigurations['BUILD'];
     OPPENHEIMER: EffectConfigurations['OPPENHEIMER'];
     SCANNING: EffectConfigurations['SCANNING'];
+    EXPLOSION: EffectConfigurations['EXPLOSION'];
   };
   particleRadius: number;
   text: string;

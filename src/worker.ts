@@ -294,7 +294,15 @@ const renderMainParticles = (
       // Use effect function instead of regular movement function
       const elapsedTime = requestAnimationFrameTime - animationStartTime;
       const animationProgress = Math.min(elapsedTime / workerState.appProps.animationDuration, 1);
-      effectFunction(particle, animationProgress, workerState.textBoundaries!);
+      effectFunction({
+        particle,
+        progress: animationProgress,
+        textBoundaries: workerState.textBoundaries!,
+        canvasDimensions: {
+          width: workerState.mainCanvas!.width,
+          height: workerState.mainCanvas!.height,
+        },
+      });
     } else {
       // Use regular movement function
       updateParticlePosition(particle, animationStartTime, requestAnimationFrameTime);

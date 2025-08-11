@@ -1,16 +1,22 @@
-import {Particle, TextBoundaries} from "../interfaces";
+import {Dimensions, Particle, TextBoundaries} from "../interfaces";
 
-export type MovementFunction = (particle: Particle & {
-  [key: string]: any;
-}, animationProgress: number, textBoundaries: TextBoundaries) => void;
+type MovementFunctionParams = {
+  particle: {[key: string]: any} & Particle;
+  progress: number;
+  textBoundaries: TextBoundaries;
+  canvasDimensions: Dimensions;
+}
 
-export type EasingType = 'ease-in-out' | 'ease-in' | 'ease-out' | 'linear' | 'quadratic-out';
+export type MovementFunction = (params: MovementFunctionParams) => void;
+
+export type EasingType = 'ease-in-out' | 'ease-in' | 'ease-out' | 'linear' | 'quadratic-out' | 'ease-out-quart' | 'ease-in-out-quint';
 
 export const EffectTypes = {
   BUILD: 'BUILD',
   SUPER_SWIRL: 'SUPER_SWIRL',
   OPPENHEIMER: 'OPPENHEIMER',
   SCANNING: 'SCANNING',
+  EXPLOSION: 'EXPLOSION',
 } as const
 
 export type EffectType = typeof EffectTypes[keyof typeof EffectTypes];
@@ -61,6 +67,12 @@ export type EffectConfigurations = {
     scanningRange: number, // How far beyond text boundaries the scan extends in pixels (default: 30)
     passDistribution: number, // Fraction of total passes used for particle distribution (default: 0.83, meaning 5/6 passes)
     settlementTiming: 'early' | 'distributed' | 'late', // When particles settle: early passes, distributed across passes, or late passes
+  }
+  EXPLOSION: {
+    explosionStrength: number, // Base explosion distance in pixels (default: 1000)
+    deconstructionPhase: number, // Fraction of animation spent exploding outward (default: 0.4)
+    orbitalRadius: number, // Size of final orbital settling wobble in pixels (default: 15)
+    depthOffset: number, // Z-axis depth for 3D perspective effect (default: -500)
   }
 }
 

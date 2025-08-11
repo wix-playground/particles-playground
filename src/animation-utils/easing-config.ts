@@ -7,7 +7,9 @@ export const easingConfig: Record<EasingType, (t: number) => number> = {
   'ease-in': (t) => t * t,
   'ease-out': (t) => 1 - (1 - t) * (1 - t),
   'linear': (t) => t,
-  'quadratic-out': quadraticOut
+  'quadratic-out': quadraticOut,
+  'ease-out-quart': (t) => 1 - Math.pow(1 - t, 4),
+  'ease-in-out-quint': (t) => t < 0.5 ? 16 * t * t * t * t * t : 1 - Math.pow(-2 * t + 2, 5) / 2,
 }
 
 export const getEasingOptions = () => Object.keys(easingConfig).map((key) => ({
