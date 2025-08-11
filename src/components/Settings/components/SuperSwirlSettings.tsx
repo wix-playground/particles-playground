@@ -6,6 +6,7 @@ import {getUpdateEffectConfigurationMessage} from '../../../interfaces';
 import styles from '../Settings.module.css';
 import {effectOptions} from '../../../animation-utils/animation-config';
 import {getEasingOptions} from '../../../animation-utils/easing-config';
+import {SettingsButton} from '../common';
 
 
 export const SuperSwirlSettings: React.FC = () => {
@@ -70,18 +71,18 @@ export const SuperSwirlSettings: React.FC = () => {
       <div className={styles['setting-row']}>
         <label className={styles['setting-label']}>Direction:</label>
         <div className={styles['settings-grid']} style={{gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px'}}>
-          <button
-            className={`${styles['setting-button']} ${config.spiralDirection === 1 ? styles['setting-button--selected'] : ''}`}
+          <SettingsButton
+            selected={config.spiralDirection === 1}
             onClick={() => handleSpiralDirectionChange(1)}
           >
             Clockwise
-          </button>
-          <button
-            className={`${styles['setting-button']} ${config.spiralDirection === -1 ? styles['setting-button--selected'] : ''}`}
+          </SettingsButton>
+          <SettingsButton
+            selected={config.spiralDirection === -1}
             onClick={() => handleSpiralDirectionChange(-1)}
           >
             Counter-clockwise
-          </button>
+          </SettingsButton>
         </div>
       </div>
 

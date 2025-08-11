@@ -4,7 +4,7 @@ import {WorkerContext} from '../../../contexts/WorkerContext';
 import {getUpdateEffectConfigurationMessage} from '../../../interfaces';
 import styles from '../Settings.module.css';
 import {effectOptions} from '../../../animation-utils/animation-config';
-import {SettingsSlider, Presets, type PresetOption} from '../common';
+import {SettingsSlider, Presets, SettingsButton, type PresetOption} from '../common';
 
 export const ScanningSettings: React.FC = () => {
   const worker = useContext(WorkerContext);
@@ -122,24 +122,24 @@ export const ScanningSettings: React.FC = () => {
       <div className={styles['setting-row']}>
         <label className={styles['setting-label']}>Settlement Timing:</label>
         <div className={styles['settings-grid']} style={{gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px'}}>
-          <button
-            className={`${styles['setting-button']} ${config.settlementTiming === 'early' ? styles['setting-button--selected'] : ''}`}
+          <SettingsButton
+            selected={config.settlementTiming === 'early'}
             onClick={() => handleSettlementTimingChange('early')}
           >
             Early
-          </button>
-          <button
-            className={`${styles['setting-button']} ${config.settlementTiming === 'distributed' ? styles['setting-button--selected'] : ''}`}
+          </SettingsButton>
+          <SettingsButton
+            selected={config.settlementTiming === 'distributed'}
             onClick={() => handleSettlementTimingChange('distributed')}
           >
             Distributed
-          </button>
-          <button
-            className={`${styles['setting-button']} ${config.settlementTiming === 'late' ? styles['setting-button--selected'] : ''}`}
+          </SettingsButton>
+          <SettingsButton
+            selected={config.settlementTiming === 'late'}
             onClick={() => handleSettlementTimingChange('late')}
           >
             Late
-          </button>
+          </SettingsButton>
         </div>
       </div>
 

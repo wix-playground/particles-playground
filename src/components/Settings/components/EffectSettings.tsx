@@ -8,6 +8,7 @@ import {SuperSwirlSettings} from './SuperSwirlSettings';
 import {BuildEffectSettings} from './BuildEffectSettings';
 import {OppenheimerSettings} from './OppenheimerSettings';
 import {ScanningSettings} from './ScanningSettings';
+import {SettingsButton} from '../common';
 import styles from '../Settings.module.css';
 
 export const EffectSettings: React.FC = () => {
@@ -41,10 +42,9 @@ export const EffectSettings: React.FC = () => {
     <div className={styles['setting-group']}>
       <div className={`${styles['settings-grid']} ${styles['settings-grid--auto']}`}>
         {effects.map((effect) => (
-          <button
+          <SettingsButton
             key={effect.id}
-            className={`${styles['setting-button']} ${appProps.selectedEffect === effect.id ? styles['setting-button--selected'] : ''
-              }`}
+            selected={appProps.selectedEffect === effect.id}
             onClick={() => handleEffectSelection(effect.id)}
           >
             <div className={styles['effect-option']}>
@@ -58,7 +58,7 @@ export const EffectSettings: React.FC = () => {
                 {effect.id === 'SCANNING' && 'Oscillating scan line that settles particles progressively'}
               </div>
             </div>
-          </button>
+          </SettingsButton>
         ))}
       </div>
 

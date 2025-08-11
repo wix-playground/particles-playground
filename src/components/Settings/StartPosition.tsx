@@ -7,6 +7,8 @@ import {
 } from '../../interfaces';
 import {AppContext} from '../../contexts/AppContext';
 import {WorkerContext} from '../../contexts/WorkerContext';
+import {SettingsButton} from './common';
+import styles from './Settings.module.css';
 
 export const StartPosition = () => {
   const appProps = useContext(AppContext);
@@ -91,19 +93,18 @@ export const StartPosition = () => {
             key={i}
           >
             {column.map(({transform, id}) => (
-              <button
+              <SettingsButton
                 key={id as string}
-                id={id as string}
-                className={`iconButton ${appProps?.startPosition === id ? 'selected' : ''
-                  }`}
+                selected={appProps?.startPosition === id}
                 onClick={() => handleSelect(id as StartPositionType)}
+                className={styles['setting-button--icon']}
               >
                 {id === 'center' ? (
                   <CenterFilled />
                 ) : (
                   <Arrow style={{transform}} />
                 )}
-              </button>
+              </SettingsButton>
             ))}
           </div>
         ))}

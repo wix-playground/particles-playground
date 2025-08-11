@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from '../Settings.module.css';
+import {SettingsButton} from './SettingsButton';
 
 export interface PresetOption<T> {
   name: string;
@@ -25,13 +26,12 @@ export function Presets<T>({
         style={{gridTemplateColumns: `repeat(${gridColumns}, 1fr)`, gap: '8px'}}
       >
         {presets.map((preset, index) => (
-          <button
+          <SettingsButton
             key={index}
-            className={styles['setting-button']}
             onClick={() => onPresetSelect(preset.config)}
           >
             {preset.name}
-          </button>
+          </SettingsButton>
         ))}
       </div>
     </div>
