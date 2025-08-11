@@ -127,8 +127,9 @@ const initialize = (data: InitializeMessagePayload) => {
   workerState.imageBitmap = _imageBitmap;
 
   if (Object.keys(appProps).length) {
-    workerState.appProps = {...defaultAppProps, ...appProps};
-  }
+    const fontWithFallback = {...appProps.font, textColor: appProps.font.textColor ?? DEFAULT_FONT_STATE.textColor};
+    workerState.appProps = {...defaultAppProps, ...appProps, font: fontWithFallback};
+  };
 
   initializeCanvas(canvas);
   workerState.frameContext!.drawImage(workerState.imageBitmap!, 0, 0);
