@@ -27,7 +27,7 @@ describe('TextSettings', () => {
       selectedMovementFunction: '',
       selectedEffect: null,
       effectConfigurations: {
-        SUPER_SWIRL: {swirlTurns: 2, spiralDirection: 1, easingType: 'ease-in-out'},
+        SUPER_SWIRL: {swirlTurns: 2, spiralDirection: 1, easingType: 'ease-in-out', affectOpacity: true, affectScale: true},
         BUILD: {horizontalPhaseEnd: 0.4, verticalCompressionFactor: 0.45, scalingBoost: 0.3, bouncyIntensity: 10, bouncyOffset: 0.75, startPosition: 'center'},
         OPPENHEIMER: {windStrength: 1.0, turbulenceScale: 60, oscillationAmount: 1.5, settlingSpeed: 1.5, particleWeight: 0.7},
         SCANNING: {oscillationFrequency: 3, settlementThreshold: 12, scanningRange: 30, passDistribution: 0.83, settlementTiming: 'distributed'},
@@ -90,7 +90,7 @@ describe('TextSettings', () => {
       selectedMovementFunction: '',
       selectedEffect: null,
       effectConfigurations: {
-        SUPER_SWIRL: {swirlTurns: 2, spiralDirection: 1, easingType: 'ease-in-out'},
+        SUPER_SWIRL: {swirlTurns: 2, spiralDirection: 1, easingType: 'ease-in-out', affectOpacity: true, affectScale: true},
         BUILD: {horizontalPhaseEnd: 0.4, verticalCompressionFactor: 0.45, scalingBoost: 0.3, bouncyIntensity: 10, bouncyOffset: 0.75, startPosition: 'center'},
         OPPENHEIMER: {windStrength: 1.0, turbulenceScale: 60, oscillationAmount: 1.5, settlingSpeed: 1.5, particleWeight: 0.7},
         SCANNING: {oscillationFrequency: 3, settlementThreshold: 12, scanningRange: 30, passDistribution: 0.83, settlementTiming: 'distributed'},

@@ -4,7 +4,7 @@ import {EffectOption, EffectTypes} from "./interfaces";
 const superSwirlEffectOption: EffectOption<'SUPER_SWIRL'> = {
   factory: (config) => {
     return ({particle, progress}) => {
-      const {swirlTurns, spiralDirection, easingType} = config;
+      const {swirlTurns, spiralDirection, easingType, affectOpacity, affectScale} = config;
       const t = Math.min(progress, 1);
 
       const ease = easingConfig[easingType](t);
@@ -32,10 +32,18 @@ const superSwirlEffectOption: EffectOption<'SUPER_SWIRL'> = {
       particle.y = particle.targetY + currentRadius * Math.sin(angle);
 
       // Optional scale pulse or shrink
-      particle.scale = 1 + 2 * (1 - ease); // start large, shrink to normal
+      if (affectScale) {
+        particle.scale = 1 + 2 * (1 - ease); // start large, shrink to normal
+      } else {
+        particle.scale = 1;
+      }
 
       // Fade in as it approaches center
-      particle.opacity = ease;
+      if (affectOpacity) {
+        particle.opacity = ease;
+      } else {
+        particle.opacity = 1;
+      }
 
       // Color could shift too (optional)
       particle.color = `rgba(255,255,255,${particle.opacity})`;
@@ -52,7 +60,9 @@ const superSwirlEffectOption: EffectOption<'SUPER_SWIRL'> = {
   defaultConfig: {
     swirlTurns: 2,
     spiralDirection: 1,
-    easingType: "ease-in-out"
+    easingType: "ease-in-out",
+    affectOpacity: true,
+    affectScale: true
   },
   commonControls: {
     startPosition: true

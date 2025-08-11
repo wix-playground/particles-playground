@@ -48,6 +48,16 @@ export const SuperSwirlSettings: React.FC = () => {
     updateConfig(newConfig);
   }, [config, updateConfig]);
 
+  const handleAffectOpacityChange = useCallback((value: boolean) => {
+    const newConfig = {...config, affectOpacity: value};
+    updateConfig(newConfig);
+  }, [config, updateConfig]);
+
+  const handleAffectScaleChange = useCallback((value: boolean) => {
+    const newConfig = {...config, affectScale: value};
+    updateConfig(newConfig);
+  }, [config, updateConfig]);
+
   if (!appProps) {
     return null;
   }
@@ -99,6 +109,42 @@ export const SuperSwirlSettings: React.FC = () => {
             </option>
           ))}
         </select>
+      </div>
+
+      <div className={styles['setting-row']}>
+        <label className={styles['setting-label']}>Easing affects Opacity:</label>
+        <div className={styles['settings-grid']} style={{gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px'}}>
+          <SettingsButton
+            selected={config.affectOpacity === true}
+            onClick={() => handleAffectOpacityChange(true)}
+          >
+            Yes
+          </SettingsButton>
+          <SettingsButton
+            selected={config.affectOpacity === false}
+            onClick={() => handleAffectOpacityChange(false)}
+          >
+            No
+          </SettingsButton>
+        </div>
+      </div>
+
+      <div className={styles['setting-row']}>
+        <label className={styles['setting-label']}>Easing affects Scale:</label>
+        <div className={styles['settings-grid']} style={{gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px'}}>
+          <SettingsButton
+            selected={config.affectScale === true}
+            onClick={() => handleAffectScaleChange(true)}
+          >
+            Yes
+          </SettingsButton>
+          <SettingsButton
+            selected={config.affectScale === false}
+            onClick={() => handleAffectScaleChange(false)}
+          >
+            No
+          </SettingsButton>
+        </div>
       </div>
     </div>
   );

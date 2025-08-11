@@ -32,6 +32,8 @@ export type EffectConfigurations = {
     swirlTurns: number; // Controls how many revolutions the particle makes
     spiralDirection: number // Could be: 1 for clockwise, -1 for counterclockwise, or random - Currently clockwise (positive rotation)
     easingType: EasingType
+    affectOpacity: boolean; // Whether opacity is affected by easing (if false, opacity is always 1)
+    affectScale: boolean; // Whether scale is affected by easing (if false, scale is always 1)
   }
   BUILD: {
     // Phase timing - controls when horizontal movement transitions to vertical
