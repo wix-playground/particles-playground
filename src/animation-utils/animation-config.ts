@@ -54,12 +54,23 @@ const superSwirlEffectOption: EffectOption<'SUPER_SWIRL'> = {
     spiralDirection: 1,
     easingType: "ease-in-out"
   },
+  commonControls: {
+    startPosition: true
+  },
 }
 
 const buildEffectOption: EffectOption<'BUILD'> = {
   factory: (config) => {
     return ({particle, progress}) => {
-      const {horizontalPhaseEnd, bounceEndPoint, verticalCompressionFactor, decompressionStart, decompressionEasing, horizontalScaleShrink, verticalScaleShrink, scalingBoost, scalingPhaseEnd, bouncyIntensity, bouncyOffset} = config;
+      const {horizontalPhaseEnd, verticalCompressionFactor, scalingBoost, bouncyIntensity, bouncyOffset} = config;
+
+      // Hardcoded values for removed properties (optimized for best visual impact)
+      const bounceEndPoint = 1;
+      const decompressionStart = 0.6;
+      const decompressionEasing = 1.1;
+      const horizontalScaleShrink = 0.2;
+      const verticalScaleShrink = 0.1;
+      const scalingPhaseEnd = 0.5;
 
       // --- Initialization ---
       if (!particle.customProps) {
@@ -140,17 +151,14 @@ const buildEffectOption: EffectOption<'BUILD'> = {
   },
   defaultConfig: {
     horizontalPhaseEnd: 0.4,
-    bounceEndPoint: 1,
     verticalCompressionFactor: 0.45,
-    decompressionStart: 0.6,
-    decompressionEasing: 1.1,
-    horizontalScaleShrink: 0.2,
-    verticalScaleShrink: 0.1,
     scalingBoost: 0.3,
-    scalingPhaseEnd: 0.5,
     bouncyIntensity: 10,
     bouncyOffset: 0.75,
     startPosition: "center"
+  },
+  commonControls: {
+    startPosition: true
   },
 }
 
@@ -340,7 +348,10 @@ const oppenheimerEffectOption: EffectOption<'OPPENHEIMER'> = {
     oscillationAmount: 1.5,
     settlingSpeed: 1.5,
     particleWeight: 0.7
-  }
+  },
+  commonControls: {
+    startPosition: true
+  },
 }
 
 const scanningEffectOption: EffectOption<'SCANNING'> = {
@@ -443,7 +454,10 @@ const scanningEffectOption: EffectOption<'SCANNING'> = {
     scanningRange: 30,
     passDistribution: 0.85,
     settlementTiming: 'distributed'
-  }
+  },
+  commonControls: {
+    startPosition: false  // SCANNING handles its own positioning logic
+  },
 }
 
 const explosionEffectOption: EffectOption<'EXPLOSION'> = {
@@ -554,7 +568,10 @@ const explosionEffectOption: EffectOption<'EXPLOSION'> = {
     deconstructionPhase: 0.4,
     orbitalRadius: 15,
     depthOffset: -500,
-  }
+  },
+  commonControls: {
+    startPosition: true
+  },
 }
 
 export const effectOptions = {

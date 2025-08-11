@@ -4,7 +4,6 @@ import {TextSettings} from './TextSettings';
 import {CollapsibleSettingsGroup} from './components/CollapsibleSettingsGroup';
 import {ParticleSettings} from './components/ParticleSettings';
 import {ColorSettings} from './components/ColorSettings';
-import {AnimationSettings} from './components/AnimationSettings';
 import {EffectSettings} from './components/EffectSettings';
 import {useCollapsibleState} from './hooks/useCollapsibleState';
 import styles from './Settings.module.css';
@@ -16,7 +15,6 @@ export const Settings = () => {
   const {isExpanded, toggle} = useCollapsibleState({
     particles: true,
     colors: false,
-    animation: true,
     effects: true,
     text: false
   });
@@ -36,13 +34,6 @@ export const Settings = () => {
           onToggle={() => toggle('effects')}
         >
           <EffectSettings />
-        </CollapsibleSettingsGroup>
-        <CollapsibleSettingsGroup
-          title="Animation"
-          isExpanded={isExpanded('animation')}
-          onToggle={() => toggle('animation')}
-        >
-          <AnimationSettings />
         </CollapsibleSettingsGroup>
         <CollapsibleSettingsGroup
           title="Particles"

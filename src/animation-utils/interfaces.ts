@@ -34,24 +34,19 @@ export type EffectConfigurations = {
     easingType: EasingType
   }
   BUILD: {
-    // Phase timing
+    // Phase timing - controls when horizontal movement transitions to vertical
     horizontalPhaseEnd: number,
-    bounceEndPoint: number,
 
-    // Compression controls
+    // Compression - controls the dramatic squeeze effect
     verticalCompressionFactor: number,
-    decompressionStart: number,
-    decompressionEasing: number,
 
-    // Scale effects
-    horizontalScaleShrink: number,
-    verticalScaleShrink: number,
+    // Scale - controls particle scaling during movement
     scalingBoost: number,
-    scalingPhaseEnd: number,
 
-    // Bouncy easing
+    // Bouncy easing - controls the signature bounce feel
     bouncyIntensity: number,
     bouncyOffset: number,
+
     startPosition: 'center'
   }
   OPPENHEIMER: {
@@ -79,4 +74,7 @@ export type EffectConfigurations = {
 export interface EffectOption<T extends EffectType> {
   factory: (config: EffectConfigurations[T]) => MovementFunction;
   defaultConfig: EffectConfigurations[T];
+  commonControls: {
+    startPosition: boolean;
+  };
 }

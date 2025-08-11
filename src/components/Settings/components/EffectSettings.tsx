@@ -9,8 +9,10 @@ import {BuildEffectSettings} from './BuildEffectSettings';
 import {OppenheimerSettings} from './OppenheimerSettings';
 import {ScanningSettings} from './ScanningSettings';
 import {ExplosionSettings} from './ExplosionSettings';
+import {StartPosition} from '../StartPosition';
 import {SettingsButton} from '../common';
 import styles from '../Settings.module.css';
+import {AnimationDurationSlider} from '../AnimationDurationSlider';
 
 export const EffectSettings: React.FC = () => {
   const worker = useContext(WorkerContext);
@@ -41,6 +43,10 @@ export const EffectSettings: React.FC = () => {
 
   return (
     <div className={styles['setting-group']}>
+      <div className={styles['setting-row']}>
+        <AnimationDurationSlider />
+      </div>
+
       <div className={`${styles['settings-grid']} ${styles['settings-grid--auto']}`}>
         {effects.map((effect) => (
           <SettingsButton
@@ -63,6 +69,13 @@ export const EffectSettings: React.FC = () => {
           </SettingsButton>
         ))}
       </div>
+
+      {/* Show start position control if selected effect supports it */}
+      {appProps.selectedEffect && effectOptions[appProps.selectedEffect]?.commonControls?.startPosition && (
+        <div className={styles['setting-row']}>
+          <StartPosition />
+        </div>
+      )}
 
       {/* Show configuration UI for selected effect */}
       {appProps.selectedEffect === 'SUPER_SWIRL' && (

@@ -28,9 +28,10 @@ describe('TextSettings', () => {
       selectedEffect: null,
       effectConfigurations: {
         SUPER_SWIRL: {swirlTurns: 2, spiralDirection: 1, easingType: 'ease-in-out'},
-        BUILD: {horizontalPhaseEnd: 0.4, bounceEndPoint: 1, verticalCompressionFactor: 0.45, decompressionStart: 0.6, decompressionEasing: 1.1, horizontalScaleShrink: 0.2, verticalScaleShrink: 0.1, scalingBoost: 0.3, scalingPhaseEnd: 0.5, bouncyIntensity: 10, bouncyOffset: 0.75, startPosition: 'center'},
+        BUILD: {horizontalPhaseEnd: 0.4, verticalCompressionFactor: 0.45, scalingBoost: 0.3, bouncyIntensity: 10, bouncyOffset: 0.75, startPosition: 'center'},
         OPPENHEIMER: {windStrength: 1.0, turbulenceScale: 60, oscillationAmount: 1.5, settlingSpeed: 1.5, particleWeight: 0.7},
-        SCANNING: {oscillationFrequency: 3, settlementThreshold: 12, scanningRange: 30, passDistribution: 0.83, settlementTiming: 'distributed'}
+        SCANNING: {oscillationFrequency: 3, settlementThreshold: 12, scanningRange: 30, passDistribution: 0.83, settlementTiming: 'distributed'},
+        EXPLOSION: {explosionStrength: 1000, deconstructionPhase: 0.4, orbitalRadius: 15, depthOffset: -500}
       },
       particleRadius: 2,
       text: 'Test',
@@ -90,9 +91,10 @@ describe('TextSettings', () => {
       selectedEffect: null,
       effectConfigurations: {
         SUPER_SWIRL: {swirlTurns: 2, spiralDirection: 1, easingType: 'ease-in-out'},
-        BUILD: {horizontalPhaseEnd: 0.4, bounceEndPoint: 1, verticalCompressionFactor: 0.45, decompressionStart: 0.6, decompressionEasing: 1.1, horizontalScaleShrink: 0.2, verticalScaleShrink: 0.1, scalingBoost: 0.3, scalingPhaseEnd: 0.5, bouncyIntensity: 10, bouncyOffset: 0.75, startPosition: 'center'},
+        BUILD: {horizontalPhaseEnd: 0.4, verticalCompressionFactor: 0.45, scalingBoost: 0.3, bouncyIntensity: 10, bouncyOffset: 0.75, startPosition: 'center'},
         OPPENHEIMER: {windStrength: 1.0, turbulenceScale: 60, oscillationAmount: 1.5, settlingSpeed: 1.5, particleWeight: 0.7},
-        SCANNING: {oscillationFrequency: 3, settlementThreshold: 12, scanningRange: 30, passDistribution: 0.83, settlementTiming: 'distributed'}
+        SCANNING: {oscillationFrequency: 3, settlementThreshold: 12, scanningRange: 30, passDistribution: 0.83, settlementTiming: 'distributed'},
+        EXPLOSION: {explosionStrength: 1000, deconstructionPhase: 0.4, orbitalRadius: 15, depthOffset: -500}
       },
       particleRadius: 2,
       text: 'Test',

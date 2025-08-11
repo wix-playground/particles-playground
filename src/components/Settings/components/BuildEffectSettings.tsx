@@ -40,13 +40,8 @@ export const BuildEffectSettings: React.FC = () => {
 
   return (
     <div className={styles['setting-group']}>
-      {/* Phase Timing */}
-      <div className={styles['setting-row']}>
-        <label className={styles['setting-label--full-width']}>Phase Timing</label>
-      </div>
-
       <SettingsSlider
-        label="Horizontal Phase End:"
+        label="Horizontal vs Vertical Movement:"
         value={config.horizontalPhaseEnd}
         min={0.1}
         max={0.8}
@@ -56,22 +51,7 @@ export const BuildEffectSettings: React.FC = () => {
       />
 
       <SettingsSlider
-        label="Bounce End Point:"
-        value={config.bounceEndPoint}
-        min={0.5}
-        max={1.5}
-        step={0.01}
-        onChange={(value) => handleValueChange('bounceEndPoint', value)}
-        formatValue={(value) => value.toFixed(2)}
-      />
-
-      {/* Compression Controls */}
-      <div className={styles['setting-row']}>
-        <label className={styles['setting-label--full-width']}>Compression Controls</label>
-      </div>
-
-      <SettingsSlider
-        label="Vertical Compression:"
+        label="Squeeze Effect Strength:"
         value={config.verticalCompressionFactor}
         min={0.1}
         max={0.8}
@@ -81,52 +61,7 @@ export const BuildEffectSettings: React.FC = () => {
       />
 
       <SettingsSlider
-        label="Decompression Start:"
-        value={config.decompressionStart}
-        min={0.2}
-        max={0.9}
-        step={0.01}
-        onChange={(value) => handleValueChange('decompressionStart', value)}
-        formatValue={(value) => value.toFixed(2)}
-      />
-
-      <SettingsSlider
-        label="Decompression Easing:"
-        value={config.decompressionEasing}
-        min={0.5}
-        max={2}
-        step={0.1}
-        onChange={(value) => handleValueChange('decompressionEasing', value)}
-        formatValue={(value) => value.toFixed(1)}
-      />
-
-      {/* Scale Effects */}
-      <div className={styles['setting-row']}>
-        <label className={styles['setting-label--full-width']}>Scale Effects</label>
-      </div>
-
-      <SettingsSlider
-        label="Horizontal Scale Shrink:"
-        value={config.horizontalScaleShrink}
-        min={0}
-        max={0.5}
-        step={0.01}
-        onChange={(value) => handleValueChange('horizontalScaleShrink', value)}
-        formatValue={(value) => value.toFixed(2)}
-      />
-
-      <SettingsSlider
-        label="Vertical Scale Shrink:"
-        value={config.verticalScaleShrink}
-        min={0}
-        max={0.5}
-        step={0.01}
-        onChange={(value) => handleValueChange('verticalScaleShrink', value)}
-        formatValue={(value) => value.toFixed(2)}
-      />
-
-      <SettingsSlider
-        label="Scaling Boost:"
+        label="Size Burst Effect:"
         value={config.scalingBoost}
         min={0}
         max={1}
@@ -136,22 +71,7 @@ export const BuildEffectSettings: React.FC = () => {
       />
 
       <SettingsSlider
-        label="Scaling Phase End:"
-        value={config.scalingPhaseEnd}
-        min={0.1}
-        max={1}
-        step={0.01}
-        onChange={(value) => handleValueChange('scalingPhaseEnd', value)}
-        formatValue={(value) => value.toFixed(2)}
-      />
-
-      {/* Bouncy Easing */}
-      <div className={styles['setting-row']}>
-        <label className={styles['setting-label--full-width']}>Bouncy Easing</label>
-      </div>
-
-      <SettingsSlider
-        label="Bouncy Intensity:"
+        label="Bounce Strength:"
         value={config.bouncyIntensity}
         min={1}
         max={20}
@@ -161,7 +81,7 @@ export const BuildEffectSettings: React.FC = () => {
       />
 
       <SettingsSlider
-        label="Bouncy Offset:"
+        label="Bounce Timing:"
         value={config.bouncyOffset}
         min={0}
         max={2}

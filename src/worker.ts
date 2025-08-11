@@ -60,6 +60,7 @@ const defaultAppProps: AppProps = {
     BUILD: effectOptions.BUILD.defaultConfig,
     OPPENHEIMER: effectOptions.OPPENHEIMER.defaultConfig,
     SCANNING: effectOptions.SCANNING.defaultConfig,
+    EXPLOSION: effectOptions.EXPLOSION.defaultConfig,
   },
   movementFunctionCode:
     getPredefinedMovementOptions()[DEFAULT_MOVEMENT_FUNCTION_KEY].code,
