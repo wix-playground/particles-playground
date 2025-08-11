@@ -61,6 +61,7 @@ const defaultAppProps: AppProps = {
     OPPENHEIMER: effectOptions.OPPENHEIMER.defaultConfig,
     SCANNING: effectOptions.SCANNING.defaultConfig,
     EXPLOSION: effectOptions.EXPLOSION.defaultConfig,
+    HELIX_SPIRAL: effectOptions.HELIX_SPIRAL.defaultConfig,
   },
   movementFunctionCode:
     getPredefinedMovementOptions()[DEFAULT_MOVEMENT_FUNCTION_KEY].code,

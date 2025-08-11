@@ -4,6 +4,7 @@ import {AppContext} from '../../../contexts/AppContext';
 import {WorkerContext} from '../../../contexts/WorkerContext';
 import {DATA_TEST_IDS, DEFAULT_ANIMATION_DURATION, DEFAULT_ENABLE_BUBBLES, DEFAULT_ENABLE_IMAGE_PARTICLES, DEFAULT_FONT_STATE} from '../../../constants';
 import {AppProps, FontState} from '../../../interfaces';
+import {effectOptions} from '../../../animation-utils/animation-config';
 
 // Mock Worker class
 class MockWorker {
@@ -27,11 +28,12 @@ describe('TextSettings', () => {
       selectedMovementFunction: '',
       selectedEffect: null,
       effectConfigurations: {
-        SUPER_SWIRL: {swirlTurns: 2, spiralDirection: 1, easingType: 'ease-in-out', affectOpacity: true, affectScale: true},
-        BUILD: {horizontalPhaseEnd: 0.4, verticalCompressionFactor: 0.45, scalingBoost: 0.3, bouncyIntensity: 10, bouncyOffset: 0.75, startPosition: 'center'},
-        OPPENHEIMER: {windStrength: 1.0, turbulenceScale: 60, oscillationAmount: 1.5, settlingSpeed: 1.5, particleWeight: 0.7},
-        SCANNING: {oscillationFrequency: 3, settlementThreshold: 12, scanningRange: 30, passDistribution: 0.83, settlementTiming: 'distributed'},
-        EXPLOSION: {explosionStrength: 1000, deconstructionPhase: 0.4, orbitalRadius: 15, depthOffset: -500}
+        SUPER_SWIRL: effectOptions.SUPER_SWIRL.defaultConfig,
+        BUILD: effectOptions.BUILD.defaultConfig,
+        OPPENHEIMER: effectOptions.OPPENHEIMER.defaultConfig,
+        SCANNING: effectOptions.SCANNING.defaultConfig,
+        EXPLOSION: {explosionStrength: 1000, deconstructionPhase: 0.4, orbitalRadius: 15, depthOffset: -500},
+        HELIX_SPIRAL: effectOptions.HELIX_SPIRAL.defaultConfig
       },
       particleRadius: 2,
       text: 'Test',
@@ -90,11 +92,12 @@ describe('TextSettings', () => {
       selectedMovementFunction: '',
       selectedEffect: null,
       effectConfigurations: {
-        SUPER_SWIRL: {swirlTurns: 2, spiralDirection: 1, easingType: 'ease-in-out', affectOpacity: true, affectScale: true},
-        BUILD: {horizontalPhaseEnd: 0.4, verticalCompressionFactor: 0.45, scalingBoost: 0.3, bouncyIntensity: 10, bouncyOffset: 0.75, startPosition: 'center'},
-        OPPENHEIMER: {windStrength: 1.0, turbulenceScale: 60, oscillationAmount: 1.5, settlingSpeed: 1.5, particleWeight: 0.7},
-        SCANNING: {oscillationFrequency: 3, settlementThreshold: 12, scanningRange: 30, passDistribution: 0.83, settlementTiming: 'distributed'},
-        EXPLOSION: {explosionStrength: 1000, deconstructionPhase: 0.4, orbitalRadius: 15, depthOffset: -500}
+        SUPER_SWIRL: effectOptions.SUPER_SWIRL.defaultConfig,
+        BUILD: effectOptions.BUILD.defaultConfig,
+        OPPENHEIMER: effectOptions.OPPENHEIMER.defaultConfig,
+        SCANNING: effectOptions.SCANNING.defaultConfig,
+        EXPLOSION: effectOptions.EXPLOSION.defaultConfig,
+        HELIX_SPIRAL: effectOptions.HELIX_SPIRAL.defaultConfig
       },
       particleRadius: 2,
       text: 'Test',

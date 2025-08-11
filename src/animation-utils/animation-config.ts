@@ -477,7 +477,7 @@ const explosionEffectOption: EffectOption<'EXPLOSION'> = {
       if (!particle.isInitialized) {
         particle.isInitialized = true;
 
-        // 2. Define the DECONSTRUCTION (explosion) vector.
+        // 1. Define the DECONSTRUCTION (explosion) vector.
         // Each particle shatters away from its starting point into deep space.
         const explosionDistance = explosionStrength + Math.random() * explosionStrength * 0.5;
         const angle = Math.random() * Math.PI * 2;
@@ -492,7 +492,7 @@ const explosionEffectOption: EffectOption<'EXPLOSION'> = {
           z: depthOffset + Math.cos(phi) * explosionDistance, // Explode away from the viewer
         };
 
-        // 3. Store final target position relative to the center.
+        // 2. Store final target position relative to the center.
         particle.finalPos = {
           x: particle.targetX,
           y: particle.targetY,
@@ -584,10 +584,117 @@ const explosionEffectOption: EffectOption<'EXPLOSION'> = {
   },
 }
 
+const helixSpiralEffectOption: EffectOption<'HELIX_SPIRAL'> = {
+  factory: (config) => {
+    return ({particle, progress, canvasDimensions}) => {
+      const {helixRadius, helixTurns, helixHeight, rotationSpeed, easingType, perspective, affectOpacity} = config;
+      if (!particle.isInitialized) {
+        particle.isInitialized = true;
+
+        // Calculate initial position around the helix cylinder
+        const angle = Math.random() * Math.PI * 2;
+        const actualHelixRadius = (helixRadius / 100) * Math.min(canvasDimensions.width, canvasDimensions.height);
+        const actualHelixHeight = (helixHeight / 100) * canvasDimensions.height;
+        const heightOffset = (Math.random() - 0.5) * actualHelixHeight;
+
+        // Store helix parameters
+        particle.helixAngle = angle;
+        particle.helixHeight = heightOffset;
+        particle.helixPhase = Math.random() * Math.PI * 2; // Random phase for variation
+
+        // Store initial 3D position on helix
+        particle.helixStartPos = {
+          x: canvasDimensions.width / 2 + Math.cos(angle) * actualHelixRadius,
+          y: canvasDimensions.height / 2 + heightOffset,
+          z: Math.sin(angle) * actualHelixRadius,
+        };
+
+        // Store calculated dimensions for use during animation
+        particle.actualHelixRadius = actualHelixRadius;
+        particle.actualHelixHeight = actualHelixHeight;
+
+        // Store final target position
+        particle.finalPos = {
+          x: particle.targetX,
+          y: particle.targetY,
+          z: 0,
+        };
+      }
+
+      const t = Math.min(progress, 1);
+      const easedProgress = easingConfig[easingType](t);
+
+      // Calculate current position along the helix
+      const currentAngle = particle.helixAngle + (helixTurns * 2 * Math.PI * t * rotationSpeed);
+      const currentHeight = particle.helixHeight * (1 - easedProgress);
+
+      // Interpolate between helix path and final position
+      const helixX = canvasDimensions.width / 2 + Math.cos(currentAngle) * particle.actualHelixRadius * (1 - easedProgress);
+      const helixY = canvasDimensions.height / 2 + currentHeight;
+      const helixZ = Math.sin(currentAngle) * particle.actualHelixRadius * (1 - easedProgress);
+
+      // Blend from helix position to final target
+      const currentPos = {
+        x: helixX + (particle.finalPos.x - helixX) * easedProgress,
+        y: helixY + (particle.finalPos.y - helixY) * easedProgress,
+        z: helixZ + (particle.finalPos.z - helixZ) * easedProgress,
+      };
+
+      // Add subtle oscillation for more dynamic movement
+      const oscillation = Math.sin(t * Math.PI * 4 + particle.helixPhase) * 10 * (1 - easedProgress);
+      currentPos.x += oscillation * Math.cos(currentAngle + Math.PI / 2);
+      currentPos.y += oscillation * 0.5;
+
+      // Apply 3D perspective projection
+      const perspectiveScale = perspective / (perspective - currentPos.z);
+
+      particle.x = (currentPos.x - canvasDimensions.width / 2) * perspectiveScale + canvasDimensions.width / 2;
+      particle.y = (currentPos.y - canvasDimensions.height / 2) * perspectiveScale + canvasDimensions.height / 2;
+      particle.scale = Math.max(0.1, perspectiveScale);
+
+      // Apply opacity based on settings
+      if (affectOpacity) {
+        // Fade in as particles approach their target
+        particle.opacity = Math.max(0, Math.min(1, perspectiveScale)) * (0.3 + 0.7 * easedProgress);
+      } else {
+        // Keep opacity consistent, only affected by perspective
+        particle.opacity = Math.max(0, Math.min(1, perspectiveScale));
+      }
+
+      // Add subtle color shifting based on depth
+      const depthFactor = (currentPos.z + particle.actualHelixRadius) / (particle.actualHelixRadius * 2);
+      const colorShift = Math.max(0.6, Math.min(1, depthFactor));
+      particle.color = `rgba(${Math.floor(255 * colorShift)}, ${Math.floor(255 * colorShift)}, 255, ${particle.opacity})`;
+
+      // Final snap to ensure perfect alignment
+      if (t >= 1) {
+        particle.x = particle.targetX;
+        particle.y = particle.targetY;
+        particle.scale = 1;
+        particle.opacity = 1;
+        particle.color = `rgba(255, 255, 255, 1)`;
+      }
+    };
+  },
+  defaultConfig: {
+    helixRadius: 20, // 20% of min canvas dimension
+    helixTurns: 3,
+    helixHeight: 50, // 50% of canvas height
+    rotationSpeed: 1,
+    easingType: "ease-in-out-quint",
+    perspective: 800,
+    affectOpacity: false,
+  },
+  commonControls: {
+    startPosition: false
+  },
+}
+
 export const effectOptions = {
   [EffectTypes.SUPER_SWIRL]: superSwirlEffectOption,
   [EffectTypes.BUILD]: buildEffectOption,
   [EffectTypes.OPPENHEIMER]: oppenheimerEffectOption,
   [EffectTypes.SCANNING]: scanningEffectOption,
   [EffectTypes.EXPLOSION]: explosionEffectOption,
+  [EffectTypes.HELIX_SPIRAL]: helixSpiralEffectOption,
 } as const;

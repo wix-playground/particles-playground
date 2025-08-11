@@ -9,6 +9,7 @@ import {BuildEffectSettings} from './BuildEffectSettings';
 import {OppenheimerSettings} from './OppenheimerSettings';
 import {ScanningSettings} from './ScanningSettings';
 import {ExplosionSettings} from './ExplosionSettings';
+import {HelixSpiralSettings} from './HelixSpiralSettings';
 import {StartPosition} from '../StartPosition';
 import {SettingsButton} from '../common';
 import styles from '../Settings.module.css';
@@ -64,6 +65,7 @@ export const EffectSettings: React.FC = () => {
                 {effect.id === 'OPPENHEIMER' && 'Wind-driven particle animation with turbulence effects'}
                 {effect.id === 'SCANNING' && 'Oscillating scan line that settles particles progressively'}
                 {effect.id === 'EXPLOSION' && '3D explosion with configurable depth and orbital settling'}
+                {effect.id === 'HELIX_SPIRAL' && '3D helical spiral with rotating depth and customizable turns'}
               </div>
             </div>
           </SettingsButton>
@@ -105,6 +107,12 @@ export const EffectSettings: React.FC = () => {
       {appProps.selectedEffect === 'EXPLOSION' && (
         <div className={styles['setting-row']}>
           <ExplosionSettings />
+        </div>
+      )}
+
+      {appProps.selectedEffect === 'HELIX_SPIRAL' && (
+        <div className={styles['setting-row']}>
+          <HelixSpiralSettings />
         </div>
       )}
     </div>

@@ -210,6 +210,7 @@ export interface AppProps {
     OPPENHEIMER: EffectConfigurations['OPPENHEIMER'];
     SCANNING: EffectConfigurations['SCANNING'];
     EXPLOSION: EffectConfigurations['EXPLOSION'];
+    HELIX_SPIRAL: EffectConfigurations['HELIX_SPIRAL'];
   };
   particleRadius: number;
   text: string;

@@ -9,7 +9,7 @@ type MovementFunctionParams = {
 
 export type MovementFunction = (params: MovementFunctionParams) => void;
 
-export type EasingType = 'ease-in-out' | 'ease-in' | 'ease-out' | 'linear' | 'quadratic-out' | 'ease-out-quart' | 'ease-in-out-quint';
+export type EasingType = 'ease-in-out' | 'ease-in' | 'ease-out' | 'linear' | 'quadratic-out' | 'ease-out-quart' | 'ease-in-out-quint' | 'ease-in-quart';
 
 export const EffectTypes = {
   BUILD: 'BUILD',
@@ -17,6 +17,7 @@ export const EffectTypes = {
   OPPENHEIMER: 'OPPENHEIMER',
   SCANNING: 'SCANNING',
   EXPLOSION: 'EXPLOSION',
+  HELIX_SPIRAL: 'HELIX_SPIRAL',
 } as const
 
 export type EffectType = typeof EffectTypes[keyof typeof EffectTypes];
@@ -70,6 +71,15 @@ export type EffectConfigurations = {
     deconstructionPhase: number, // Fraction of animation spent exploding outward (default: 0.4)
     orbitalRadius: number, // Size of final orbital settling wobble in pixels (default: 15)
     depthOffset: number, // Z-axis depth for 3D perspective effect (default: -500)
+  }
+  HELIX_SPIRAL: {
+    helixRadius: number, // Radius as % of min(width, height) (default: 20%)
+    helixTurns: number, // Number of complete turns around the helix (default: 3)
+    helixHeight: number, // Vertical range as % of canvas height (default: 50%)
+    rotationSpeed: number, // Speed of 3D rotation multiplier (default: 1)
+    easingType: EasingType, // Easing function for the movement (default: 'ease-in-out-quint')
+    perspective: number, // 3D perspective strength (default: 800)
+    affectOpacity: boolean, // Whether opacity is affected by easing (default: true)
   }
 }
 
