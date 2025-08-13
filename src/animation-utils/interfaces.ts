@@ -87,6 +87,7 @@ export interface EffectOption<T extends EffectType> {
   factory: (config: EffectConfigurations[T]) => MovementFunction;
   defaultConfig: EffectConfigurations[T];
   commonControls: {
-    startPosition: boolean;
+    startPosition?: boolean;
+    delay?: boolean;
   };
 }

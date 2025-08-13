@@ -17,6 +17,7 @@ export interface Particle extends Coordinates {
   initialY: number;
   scale: number;
   opacity: number;
+  delay: number;
   color: string;
   revealProgress?: number;
   revealThreshold?: number;
@@ -61,6 +62,7 @@ export enum Action {
   UPDATE_FONT = 'UPDATE_FONT',
   UPDATE_PARTICLE_COLORS = 'UPDATE_PARTICLE_COLORS',
   UPDATE_ANIMATION_DURATION = 'UPDATE_ANIMATION_DURATION',
+  UPDATE_DELAY = 'UPDATE_DELAY',
   UPDATE_ENABLE_BUBBLES = 'UPDATE_ENABLE_BUBBLES',
   UPDATE_ENABLE_IMAGE_PARTICLES = 'UPDATE_ENABLE_IMAGE_PARTICLES',
 }
@@ -149,6 +151,11 @@ export const getUpdateEnableImageParticlesMessage = (payload: boolean) => ({
   payload,
 });
 
+export const getUpdateDelayMessage = (payload: number) => ({
+  type: Action.UPDATE_DELAY as const,
+  payload,
+});
+
 export const getUpdateSelectedEffectMessage = (payload: EffectType | null) => ({
   type: Action.UPDATE_SELECTED_EFFECT as const,
   payload,
@@ -175,6 +182,7 @@ export type MainThreadMessage =
   | ReturnType<typeof getUpdateFontMessage>
   | ReturnType<typeof getUpdateParticleColorsMessage>
   | ReturnType<typeof getUpdateAnimationDurationMessage>
+  | ReturnType<typeof getUpdateDelayMessage>
   | ReturnType<typeof getUpdateEnableBubblesMessage>
   | ReturnType<typeof getUpdateEnableImageParticlesMessage>;
 
@@ -217,6 +225,7 @@ export interface AppProps {
   font: FontState;
   particleColors: string[];
   animationDuration: number;
+  delay: number;
   enableBubbles: boolean;
   enableImageParticles: boolean;
 }

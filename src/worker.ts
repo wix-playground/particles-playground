@@ -7,6 +7,7 @@ import {
   DEFAULT_PARTICLES_TEXT,
   DEFAULT_START_POSITION,
   DEFAULT_ANIMATION_DURATION,
+  DEFAULT_DELAY,
   DEFAULT_ENABLE_BUBBLES,
   DEFAULT_ENABLE_IMAGE_PARTICLES,
   BUBBLE_PARTICLE_LIFETIME,
@@ -69,6 +70,7 @@ const defaultAppProps: AppProps = {
   font: DEFAULT_FONT_STATE,
   particleColors: DEFAULT_PARTICLE_COLORS,
   animationDuration: DEFAULT_ANIMATION_DURATION,
+  delay: DEFAULT_DELAY,
   enableBubbles: DEFAULT_ENABLE_BUBBLES,
   enableImageParticles: DEFAULT_ENABLE_IMAGE_PARTICLES,
 };
@@ -162,6 +164,7 @@ const initialize = (data: InitializeMessagePayload) => {
     blockHeight: workerState.blockHeight,
     blockWidth: workerState.blockWidth,
     startPosition: workerState.appProps.startPosition,
+    delay: workerState.appProps.delay,
   });
 };
 
@@ -174,12 +177,14 @@ const generateParticles = ({
   blockHeight,
   blockWidth,
   startPosition,
+  delay,
 }: {
   validBlocks: Uint8Array<ArrayBuffer>;
   radius: number;
   blockHeight: number;
   blockWidth: number;
   startPosition: StartPositionType;
+  delay: number;
 }) => {
   const particles: Array<Particle> = [];
 
@@ -189,6 +194,8 @@ const generateParticles = ({
       if (validBlocks[index]) {
         const x = blockX * radius;
         const y = blockY * radius;
+
+        const particleDelay = Math.round(Math.random() * delay);
 
         const {x: initialX, y: initialY} =
           startCoordinatesConfig[startPosition as StartPositionType]();
@@ -202,6 +209,7 @@ const generateParticles = ({
           initialY,
           scale: 1,
           opacity: 1,
+          delay: particleDelay,
           color: DEFAULT_PARTICLE_COLOR,
           revealProgress: 0,
           revealThreshold: 0.97 + Math.random() * 0.02, // Between 0.97 and 0.99
@@ -291,10 +299,11 @@ const renderMainParticles = (
     effectFunction = effectOption.factory(customConfig as any); // check if we can make this not any
   }
 
+  const elapsedTime = requestAnimationFrameTime - animationStartTime;
+
   workerState.workerParticles.forEach((particle) => {
     if (effectFunction) {
       // Use effect function instead of regular movement function
-      const elapsedTime = requestAnimationFrameTime - animationStartTime;
       const animationProgress = Math.min(elapsedTime / workerState.appProps.animationDuration, 1);
       effectFunction({
         particle,
@@ -308,6 +317,11 @@ const renderMainParticles = (
     } else {
       // Use regular movement function
       updateParticlePosition(particle, animationStartTime, requestAnimationFrameTime);
+    }
+
+    // Do not render particles that are delayed
+    if (particle.delay > elapsedTime) {
+      return;
     }
 
     drawParticle({
@@ -410,6 +424,7 @@ const resetState = () => {
         targetY: particle.targetY,
         scale: 1,
         opacity: 1,
+        delay: particle.delay,
         color: particle.color,
         revealProgress: 0,
         revealThreshold: particle.revealThreshold,
@@ -478,6 +493,7 @@ self.onmessage = (event: MessageEvent<MainThreadMessage>) => {
         blockHeight: workerState.blockHeight,
         blockWidth: workerState.blockWidth,
         startPosition: workerState.appProps.startPosition,
+        delay: workerState.appProps.delay,
       });
 
       workerState.textBoundaries = getTextBoundaries(workerState.workerParticles, workerState.appProps.particleRadius);
@@ -623,6 +639,7 @@ self.onmessage = (event: MessageEvent<MainThreadMessage>) => {
           blockHeight: workerState.blockHeight,
           blockWidth: workerState.blockWidth,
           startPosition: workerState.appProps.startPosition,
+          delay: workerState.appProps.delay,
         });
       }
       break;
@@ -639,6 +656,27 @@ self.onmessage = (event: MessageEvent<MainThreadMessage>) => {
       if (workerState.animationFrameId) {
         workerState.bubbleParticles = [];
       }
+      break;
+    }
+    case Action.UPDATE_DELAY: {
+      workerState.appProps.delay = payload;
+
+      // Regenerate particles with new delay (if blocks are available)
+      if (workerState.validBlocks) {
+        workerState.workerParticles = generateParticles({
+          validBlocks: workerState.validBlocks,
+          radius: workerState.appProps.particleRadius,
+          blockHeight: workerState.blockHeight,
+          blockWidth: workerState.blockWidth,
+          startPosition: workerState.appProps.startPosition,
+          delay: workerState.appProps.delay,
+        });
+      }
+
+      self.postMessage({
+        type: WorkerAction.UPDATE_APP_PROPS,
+        data: workerState.appProps,
+      });
       break;
     }
     case Action.UPDATE_ENABLE_BUBBLES: {

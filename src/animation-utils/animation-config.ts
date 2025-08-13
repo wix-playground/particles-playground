@@ -65,7 +65,8 @@ const superSwirlEffectOption: EffectOption<'SUPER_SWIRL'> = {
     affectScale: true
   },
   commonControls: {
-    startPosition: true
+    startPosition: true,
+    delay: true,
   },
 }
 
@@ -168,7 +169,8 @@ const buildEffectOption: EffectOption<'BUILD'> = {
     startPosition: "center"
   },
   commonControls: {
-    startPosition: true
+    startPosition: true,
+    delay: true,
   },
 }
 
@@ -360,7 +362,8 @@ const oppenheimerEffectOption: EffectOption<'OPPENHEIMER'> = {
     particleWeight: 0.7
   },
   commonControls: {
-    startPosition: true
+    startPosition: true,
+    delay: true,
   },
 }
 
@@ -466,7 +469,8 @@ const scanningEffectOption: EffectOption<'SCANNING'> = {
     settlementTiming: 'distributed'
   },
   commonControls: {
-    startPosition: false  // SCANNING handles its own positioning logic
+    startPosition: false,  // SCANNING handles its own positioning logic
+    delay: true,
   },
 }
 
@@ -580,7 +584,8 @@ const explosionEffectOption: EffectOption<'EXPLOSION'> = {
     depthOffset: -500,
   },
   commonControls: {
-    startPosition: true
+    startPosition: true,
+    delay: true,
   },
 }
 
@@ -686,7 +691,8 @@ const helixSpiralEffectOption: EffectOption<'HELIX_SPIRAL'> = {
     affectOpacity: false,
   },
   commonControls: {
-    startPosition: false
+    startPosition: false,
+    delay: true,
   },
 }
 
