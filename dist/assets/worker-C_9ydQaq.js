@@ -20,12 +20,20 @@ return (particle, animationStartTime, currentTime, canvasDimensions) => {
  * @param {number} particle.scale - The scale of the particle.
  * @param {number} particle.opacity - The opacity of the particle.
  * @param {string} particle.color - The color of the particle.
+ * @param {number} particle.delay - Amount of time before the particle start to be drawn.
  * @param {number} animationStartTime - The timestamp when the animation started.
  * @param {number} currentTime - The current timestamp of the animation frame.
  * @param {Object} canvasDimensions - The dimensions of the canvas.
  * @param {number} canvasDimensions.width - Width of the canvas where particles are being rendered.
  * @param {number} canvasDimensions.height - Height of the canvas where particles are being rendered.
  * @param {number} animationDuration - The duration of the animation.
+ * @param {Object} textBoundaries - The boundaries of the text.
+ * @param {number} textBoundaries.width - The width of the text.
+ * @param {number} textBoundaries.height - The height of the text.
+ * @param {number} textBoundaries.minX - The minimum x-coordinate of the text.
+ * @param {number} textBoundaries.minY - The minimum y-coordinate of the text.
+ * @param {number} textBoundaries.maxX - The maximum x-coordinate of the text.
+ * @param {number} textBoundaries.maxY - The maximum y-coordinate of the text.
  * @returns {Function} A function to be called on each animation frame to update the particle's position.
  */
 `,Se=`${Y}
@@ -35,9 +43,9 @@ return (() => {
      * Movement function can access the configuration object and use it to modify the behavior of the animation.
      * For example, in Swirl effect you can configure the number of swirls, the speed of the swirls, the direction of the swirls, etc.
      */
-    const config = {};
+    const config = { /* animation parameters here */ };
 
-    return (particle, animationStartTime, currentTime, canvasDimensions, animationDuration) => {
+    return (particle, animationStartTime, currentTime, canvasDimensions, animationDuration, textBoundaries) => {
         /**
         * Write your movement animation code here to incrementally update particle position.
         * The particle is mutable here so you can add whatever properties you need to achieve your animation.
