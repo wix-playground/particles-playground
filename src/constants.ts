@@ -54,47 +54,73 @@ export const EXAMPLE_JSDOC = `/**
  * @param {number} particle.scale - The scale of the particle.
  * @param {number} particle.opacity - The opacity of the particle.
  * @param {string} particle.color - The color of the particle.
+ * @param {number} particle.delay - Amount of time before the particle start to be drawn.
  * @param {number} animationStartTime - The timestamp when the animation started.
  * @param {number} currentTime - The current timestamp of the animation frame.
  * @param {Object} canvasDimensions - The dimensions of the canvas.
  * @param {number} canvasDimensions.width - Width of the canvas where particles are being rendered.
  * @param {number} canvasDimensions.height - Height of the canvas where particles are being rendered.
  * @param {number} animationDuration - The duration of the animation.
+ * @param {Object} textBoundaries - The boundaries of the text.
+ * @param {number} textBoundaries.width - The width of the text.
+ * @param {number} textBoundaries.height - The height of the text.
+ * @param {number} textBoundaries.minX - The minimum x-coordinate of the text.
+ * @param {number} textBoundaries.minY - The minimum y-coordinate of the text.
+ * @param {number} textBoundaries.maxX - The maximum x-coordinate of the text.
+ * @param {number} textBoundaries.maxY - The maximum y-coordinate of the text.
  * @returns {Function} A function to be called on each animation frame to update the particle's position.
  */
 `
 
 export const EXAMPLE_CODE = `${EXAMPLE_JSDOC}
-return (particle, animationStartTime, currentTime, canvasDimensions, animationDuration) => {
+return (() => {
     /**
-    * Write your movement animation code here to incrementally update particle position.
-    * The particle is mutable here so you can add whatever properties you need to achieve your animation.
-    */
+     * Define the configuration for the movement function.
+     * Movement function can access the configuration object and use it to modify the behavior of the animation.
+     * For example, in Swirl effect you can configure the number of swirls, the speed of the swirls, the direction of the swirls, etc.
+     */
+    const config = { /* animation parameters here */ };
 
-    // Helper function for getting new position value.
-    const getUpdatedPosition = (currentPosition, targetPosition, delta) => {
-        const distance = Math.abs(currentPosition - targetPosition)
-        if (distance <= delta) {
-            return targetPosition
-        } else {
-            return currentPosition < targetPosition ? currentPosition + delta : currentPosition - delta
+    return (particle, animationStartTime, currentTime, canvasDimensions, animationDuration, textBoundaries) => {
+        /**
+        * Write your movement animation code here to incrementally update particle position.
+        * The particle is mutable here so you can add whatever properties you need to achieve your animation.
+        */
+    
+        // Helper function for getting new position value.
+        const getUpdatedPosition = (currentPosition, targetPosition, delta) => {
+            const distance = Math.abs(currentPosition - targetPosition)
+            if (distance <= delta) {
+                return targetPosition
+            } else {
+                return currentPosition < targetPosition ? currentPosition + delta : currentPosition - delta
+            }
         }
+    
+        // Elapsed time since the start of the animation.
+        const totalElapsedTime = currentTime - animationStartTime
+    
+        const initialDelta = 1
+        // After 1 second, the particles will move twice as fast.
+        const delta = totalElapsedTime < 1000 ? initialDelta : initialDelta * 2
+    
+        // To keep the example simple, particle coordinates are updated by delta until target coordinates are reached.
+        particle.x = getUpdatedPosition(particle.x, particle.targetX, delta)
+        particle.y = getUpdatedPosition(particle.y, particle.targetY, delta)
     }
+})()
+`;
 
-    // Elapsed time since the start of the animation.
-    const totalElapsedTime = currentTime - animationStartTime
+export const EXAMPLE_AI_PROMPT = `
+Write a new particle movement function following the same contract as the example below, but with a more visually interesting animation (e.g., curves, easing, oscillations, swirls, etc.).
+* Move all relevant animation parameters (speed, easing, oscillation amplitude, swirl radius, etc.) into a config object so they can be easily tweaked at runtime.
+* The animation must ensure that all particles reach their target coordinates exactly within the given animationDuration.
+* Do not include JSDoc comments in your code — they are already provided in the example.
+* The function should be self-contained, returning another function that will be called every animation frame to update particle properties.
+* You may extend the particle object with additional properties needed for your effect.
 
-    const initialDelta = 1
-    // After 1 second, the particles will move twice as fast.
-    const delta = totalElapsedTime < 1000 ? initialDelta : initialDelta * 2
-
-    // To keep the example simple, particle coordinates are updated by delta until target coordinates are reached.
-    particle.x = getUpdatedPosition(particle.x, particle.targetX, delta)
-    particle.y = getUpdatedPosition(particle.y, particle.targetY, delta)
-}`;
-
-export const EXAMPLE_AI_PROMPT = `Write another function using the contract like this one with interesting animation. Make sure the all of the particles reach the target within the animation duration. You don't need to write JSDOC.:
-${EXAMPLE_CODE}`;
+${EXAMPLE_CODE}`
+;
 
 export const DATA_TEST_IDS = {
     FONT_FAMILY_SELECT: 'font-family-select',

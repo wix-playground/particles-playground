@@ -17,7 +17,7 @@ import {AppContext} from './contexts/AppContext';
 import {WorkerContext} from './contexts/WorkerContext';
 import {Editor} from './components/Editor/Editor';
 import {loadJsonFromSnippet} from './snippet';
-import {getFontString} from './utils';
+import {formatCode, getFontString} from './utils';
 
 const App = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -135,10 +135,7 @@ const App = () => {
   );
 
   const play = useCallback(() => {
-    if (editorRef.current) {
-      editorRef.current.getAction('editor.action.formatDocument')?.run();
-    }
-
+    setAppProps((prev) => prev ? {...prev, movementFunctionCode: formatCode(prev.movementFunctionCode)} : null);
     workerRef.current?.postMessage(getPlayMessage());
   }, []);
 

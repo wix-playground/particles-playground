@@ -26,6 +26,7 @@ import {
 } from './interfaces';
 import {getPredefinedMovementOptions} from './movement';
 import {
+  formatCode,
   getStartCoordinatesConfig,
   getTextBoundaries,
   getValidImageBlocks,
@@ -39,17 +40,15 @@ import {
   isParticleAtTarget,
 } from './particle-utils';
 import {effectOptions} from './animation-utils/animation-config';
-import {MovementFunction} from './animation-utils/interfaces';
 
 let customMovementFunction: (
   particle: Particle,
   animationStartTime: number,
   requestAnimationFrameTime: number,
   canvasDimensions: Dimensions,
-  animationDuration: number
+  animationDuration: number,
+  textBoundaries: TextBoundaries,
 ) => void;
-
-
 
 const defaultAppProps: AppProps = {
   particleRadius: DEFAULT_PARTICLE_RADIUS,
@@ -252,7 +251,8 @@ const renderBubbleParticles = (requestAnimationFrameTime: number) => {
 const updateParticlePosition = (
   particle: Particle,
   animationStartTime: number,
-  requestAnimationFrameTime: number
+  requestAnimationFrameTime: number,
+  textBoundaries: TextBoundaries
 ) => {
   customMovementFunction(
     particle,
@@ -262,7 +262,8 @@ const updateParticlePosition = (
       width: workerState.mainCanvas!.width,
       height: workerState.mainCanvas!.height,
     },
-    workerState.appProps.animationDuration
+    workerState.appProps.animationDuration,
+    textBoundaries,
   );
 };
 
@@ -289,35 +290,11 @@ const renderMainParticles = (
   animationStartTime: number,
   requestAnimationFrameTime: number
 ): boolean => {
+  const elapsedTime = requestAnimationFrameTime - animationStartTime;
   let allParticlesReached = true;
 
-  let effectFunction: MovementFunction | null = null;
-
-  if (workerState.appProps.selectedEffect) {
-    const effectOption = effectOptions[workerState.appProps.selectedEffect];
-    const customConfig = workerState.appProps.effectConfigurations[workerState.appProps.selectedEffect];
-    effectFunction = effectOption.factory(customConfig as any); // check if we can make this not any
-  }
-
-  const elapsedTime = requestAnimationFrameTime - animationStartTime;
-
   workerState.workerParticles.forEach((particle) => {
-    if (effectFunction) {
-      // Use effect function instead of regular movement function
-      const animationProgress = Math.min(elapsedTime / workerState.appProps.animationDuration, 1);
-      effectFunction({
-        particle,
-        progress: animationProgress,
-        textBoundaries: workerState.textBoundaries!,
-        canvasDimensions: {
-          width: workerState.mainCanvas!.width,
-          height: workerState.mainCanvas!.height,
-        },
-      });
-    } else {
-      // Use regular movement function
-      updateParticlePosition(particle, animationStartTime, requestAnimationFrameTime);
-    }
+    updateParticlePosition(particle, animationStartTime, requestAnimationFrameTime, workerState.textBoundaries!);
 
     // Do not render particles that are delayed
     if (particle.delay > elapsedTime) {
@@ -551,6 +528,7 @@ self.onmessage = (event: MessageEvent<MainThreadMessage>) => {
       }
       if (movementFunctionCode !== undefined && movementFunctionCode !== null) {
         workerState.appProps.movementFunctionCode = movementFunctionCode;
+        workerState.appProps.selectedEffect = null;
       }
 
       self.postMessage({
@@ -699,6 +677,9 @@ self.onmessage = (event: MessageEvent<MainThreadMessage>) => {
     }
     case Action.UPDATE_SELECTED_EFFECT: {
       workerState.appProps.selectedEffect = payload;
+      if (payload && effectOptions[payload].getCode) {
+        workerState.appProps.movementFunctionCode = formatCode(effectOptions[payload].getCode(workerState.appProps.effectConfigurations[payload] as any));
+      }
 
       self.postMessage({
         type: WorkerAction.UPDATE_APP_PROPS,
@@ -709,6 +690,10 @@ self.onmessage = (event: MessageEvent<MainThreadMessage>) => {
     case Action.UPDATE_EFFECT_CONFIGURATION: {
       const {effectType, configuration} = payload;
       (workerState.appProps.effectConfigurations as any)[effectType] = configuration;
+      
+      if (effectOptions[effectType].getCode) {
+        workerState.appProps.movementFunctionCode = formatCode(effectOptions[effectType].getCode(configuration as any));
+      }
 
       self.postMessage({
         type: WorkerAction.UPDATE_APP_PROPS,

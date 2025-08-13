@@ -1,5 +1,4 @@
-import {useCallback, useContext, useMemo, useState} from 'react';
-import {getPredefinedMovementOptions} from '../../movement';
+import {useCallback, useContext, useState} from 'react';
 import {WorkerContext} from '../../contexts/WorkerContext';
 import {getUpdateSelectedMovementFunctionMessage} from '../../interfaces';
 import MonacoEditor from '@monaco-editor/react';
@@ -22,10 +21,6 @@ export const Editor = ({
 }) => {
   const worker = useContext(WorkerContext);
   const appProps = useContext(AppContext);
-  const predefinedMovementFunctions = useMemo(
-    () => getPredefinedMovementOptions(),
-    []
-  );
   const [shareButtonText, setShareButtonText] = useState(
     COPY_SHAREABLE_LINK_TEXT
   );
@@ -33,35 +28,14 @@ export const Editor = ({
   const handleEditorChange = useCallback(
     (value: string | undefined) => {
       if (worker) {
-        const movementFunctionEntries = Object.entries(
-          predefinedMovementFunctions
+        worker.postMessage(
+          getUpdateSelectedMovementFunctionMessage({
+            movementFunctionCode: value ?? '',
+          })
         );
-
-        const predefinedFunctionEntry = movementFunctionEntries.find(
-          (entry) => {
-            const [, {code}] = entry;
-            return code === value;
-          }
-        );
-
-        if (predefinedFunctionEntry) {
-          const [key, {code}] = predefinedFunctionEntry;
-          worker.postMessage(
-            getUpdateSelectedMovementFunctionMessage({
-              key,
-              movementFunctionCode: code,
-            })
-          );
-        } else {
-          worker.postMessage(
-            getUpdateSelectedMovementFunctionMessage({
-              movementFunctionCode: value ?? '',
-            })
-          );
-        }
       }
     },
-    [predefinedMovementFunctions, worker]
+    [worker]
   );
 
   const handleResetCode = useCallback(() => {
