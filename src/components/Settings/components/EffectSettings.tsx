@@ -14,6 +14,7 @@ import {StartPosition} from '../StartPosition';
 import {SettingsButton} from '../common';
 import styles from '../Settings.module.css';
 import {AnimationDurationSlider} from '../AnimationDurationSlider';
+import {DelaySlider} from '../DelaySlider';
 
 export const EffectSettings: React.FC = () => {
   const worker = useContext(WorkerContext);
@@ -76,6 +77,13 @@ export const EffectSettings: React.FC = () => {
       {appProps.selectedEffect && effectOptions[appProps.selectedEffect]?.commonControls?.startPosition && (
         <div className={styles['setting-row']}>
           <StartPosition />
+        </div>
+      )}
+
+      {/* Show delay control if selected effect supports it */}
+      {appProps.selectedEffect && effectOptions[appProps.selectedEffect]?.commonControls?.delay && (
+        <div className={styles['setting-row']}>
+          <DelaySlider />
         </div>
       )}
 
