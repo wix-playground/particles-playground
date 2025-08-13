@@ -26,6 +26,7 @@ import {
 } from './interfaces';
 import {getPredefinedMovementOptions} from './movement';
 import {
+  formatCode,
   getStartCoordinatesConfig,
   getTextBoundaries,
   getValidImageBlocks,
@@ -527,9 +528,7 @@ self.onmessage = (event: MessageEvent<MainThreadMessage>) => {
       }
       if (movementFunctionCode !== undefined && movementFunctionCode !== null) {
         workerState.appProps.movementFunctionCode = movementFunctionCode;
-        // TODO: We should reset the effect if we change the movement function
-        // but for some reason play fires code change and resets the effect
-        // workerState.appProps.selectedEffect = null;
+        workerState.appProps.selectedEffect = null;
       }
 
       self.postMessage({
@@ -679,7 +678,7 @@ self.onmessage = (event: MessageEvent<MainThreadMessage>) => {
     case Action.UPDATE_SELECTED_EFFECT: {
       workerState.appProps.selectedEffect = payload;
       if (payload && effectOptions[payload].getCode) {
-        workerState.appProps.movementFunctionCode = effectOptions[payload].getCode(workerState.appProps.effectConfigurations[payload] as any);
+        workerState.appProps.movementFunctionCode = formatCode(effectOptions[payload].getCode(workerState.appProps.effectConfigurations[payload] as any));
       }
 
       self.postMessage({
@@ -693,8 +692,7 @@ self.onmessage = (event: MessageEvent<MainThreadMessage>) => {
       (workerState.appProps.effectConfigurations as any)[effectType] = configuration;
       
       if (effectOptions[effectType].getCode) {
-        workerState.appProps.movementFunctionCode = effectOptions[effectType].getCode(configuration as any);
-        console.log(workerState.appProps.movementFunctionCode);
+        workerState.appProps.movementFunctionCode = formatCode(effectOptions[effectType].getCode(configuration as any));
       }
 
       self.postMessage({

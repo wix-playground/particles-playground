@@ -1,3 +1,5 @@
+import { js as beautify } from 'js-beautify';
+
 import {
   Coordinates,
   Dimensions,
@@ -189,3 +191,12 @@ export const getTextBoundaries = (
     height: maxY - minY,
   };
 };
+
+
+export const formatCode = (code: string) => {
+  return beautify(code, {
+    indent_size: 2,
+    space_in_empty_paren: false,
+    preserve_newlines: true
+  });
+};  
