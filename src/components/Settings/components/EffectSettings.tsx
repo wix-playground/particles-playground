@@ -37,7 +37,7 @@ export const EffectSettings: React.FC = () => {
       word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
     ).join(' '),
     option
-  }));
+  })).filter((effect) => effect.id !== 'HELIX_SPIRAL');
 
   if (!appProps) {
     return null;
