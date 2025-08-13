@@ -1,13 +1,13 @@
 import {Dimensions, Particle, TextBoundaries} from "../interfaces";
 
-type MovementFunctionParams = {
-  particle: {[key: string]: any} & Particle;
-  progress: number;
-  textBoundaries: TextBoundaries;
-  canvasDimensions: Dimensions;
-}
-
-export type MovementFunction = (params: MovementFunctionParams) => void;
+export type MovementFunction = (
+  particle: Particle & {[key: string]: any},
+  animationStartTime: number,
+  requestAnimationFrameTime: number,
+  canvasDimensions: Dimensions,
+  animationDuration: number,
+  textBoundaries: TextBoundaries,
+) => void;
 
 export type EasingType = 'ease-in-out' | 'ease-in' | 'ease-out' | 'linear' | 'quadratic-out' | 'ease-out-quart' | 'ease-in-out-quint' | 'ease-in-quart';
 
@@ -90,4 +90,5 @@ export interface EffectOption<T extends EffectType> {
     startPosition?: boolean;
     delay?: boolean;
   };
+  getCode?: (config: EffectConfigurations[T]) => string;
 }

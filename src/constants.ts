@@ -65,33 +65,43 @@ export const EXAMPLE_JSDOC = `/**
 `
 
 export const EXAMPLE_CODE = `${EXAMPLE_JSDOC}
-return (particle, animationStartTime, currentTime, canvasDimensions, animationDuration) => {
+return (() => {
     /**
-    * Write your movement animation code here to incrementally update particle position.
-    * The particle is mutable here so you can add whatever properties you need to achieve your animation.
-    */
+     * Define the configuration for the movement function.
+     * Movement function can access the configuration object and use it to modify the behavior of the animation.
+     * For example, in Swirl effect you can configure the number of swirls, the speed of the swirls, the direction of the swirls, etc.
+     */
+    const config = {};
 
-    // Helper function for getting new position value.
-    const getUpdatedPosition = (currentPosition, targetPosition, delta) => {
-        const distance = Math.abs(currentPosition - targetPosition)
-        if (distance <= delta) {
-            return targetPosition
-        } else {
-            return currentPosition < targetPosition ? currentPosition + delta : currentPosition - delta
+    return (particle, animationStartTime, currentTime, canvasDimensions, animationDuration) => {
+        /**
+        * Write your movement animation code here to incrementally update particle position.
+        * The particle is mutable here so you can add whatever properties you need to achieve your animation.
+        */
+    
+        // Helper function for getting new position value.
+        const getUpdatedPosition = (currentPosition, targetPosition, delta) => {
+            const distance = Math.abs(currentPosition - targetPosition)
+            if (distance <= delta) {
+                return targetPosition
+            } else {
+                return currentPosition < targetPosition ? currentPosition + delta : currentPosition - delta
+            }
         }
+    
+        // Elapsed time since the start of the animation.
+        const totalElapsedTime = currentTime - animationStartTime
+    
+        const initialDelta = 1
+        // After 1 second, the particles will move twice as fast.
+        const delta = totalElapsedTime < 1000 ? initialDelta : initialDelta * 2
+    
+        // To keep the example simple, particle coordinates are updated by delta until target coordinates are reached.
+        particle.x = getUpdatedPosition(particle.x, particle.targetX, delta)
+        particle.y = getUpdatedPosition(particle.y, particle.targetY, delta)
     }
-
-    // Elapsed time since the start of the animation.
-    const totalElapsedTime = currentTime - animationStartTime
-
-    const initialDelta = 1
-    // After 1 second, the particles will move twice as fast.
-    const delta = totalElapsedTime < 1000 ? initialDelta : initialDelta * 2
-
-    // To keep the example simple, particle coordinates are updated by delta until target coordinates are reached.
-    particle.x = getUpdatedPosition(particle.x, particle.targetX, delta)
-    particle.y = getUpdatedPosition(particle.y, particle.targetY, delta)
-}`;
+})()
+`;
 
 export const EXAMPLE_AI_PROMPT = `Write another function using the contract like this one with interesting animation. Make sure the all of the particles reach the target within the animation duration. You don't need to write JSDOC.:
 ${EXAMPLE_CODE}`;
