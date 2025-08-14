@@ -30,7 +30,7 @@ export const FontSettings = () => {
   const appProps = useContext(AppContext);
   const worker = useContext(WorkerContext);
 
-  const fontState = appProps?.font ?? DEFAULT_FONT_STATE;
+  const fontState = {...DEFAULT_FONT_STATE, ...appProps?.font};
 
 
   const setFontState = useCallback(
@@ -45,7 +45,7 @@ export const FontSettings = () => {
   // Generate weight options for fonts with weight ranges
   const generateWeightOptions = (font: FontFamily) => {
     const config = fontConfig[font];
-    if (Array.isArray(config.weight)) {
+    if (Array.isArray(config?.weight)) {
       const [min, max] = config.weight;
       const options = [];
       for (let weight = min; weight <= max; weight += 100) {
@@ -53,7 +53,7 @@ export const FontSettings = () => {
       }
       return options;
     }
-    return [config.weight];
+    return config?.weight ? [config.weight] : [400];
   };
 
   // Handle font family change
@@ -143,7 +143,7 @@ export const FontSettings = () => {
         </select>
       </div>
 
-      {fontConfig[fontState.fontFamily].hasItalic && (
+      {fontConfig[fontState.fontFamily]?.hasItalic && (
         <div className="setting-group">
           <label htmlFor="font-italic">
             <input

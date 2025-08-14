@@ -142,7 +142,7 @@ const initialize = (data: InitializeMessagePayload) => {
   workerState.imageBitmap = _imageBitmap;
 
   if (Object.keys(appProps).length) {
-    const fontWithFallback = {...appProps.font, textColor: appProps.font.textColor ?? DEFAULT_FONT_STATE.textColor};
+    const fontWithFallback = {...DEFAULT_FONT_STATE, ...appProps.font};
     workerState.appProps = {...defaultAppProps, ...appProps, font: fontWithFallback};
   };
 
