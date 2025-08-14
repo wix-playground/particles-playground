@@ -40,7 +40,6 @@ import {
   getStartCoordinatesConfig,
   getTextBoundaries,
   getValidImageBlocks,
-  getColorFromProgressCyclic,
 } from './utils';
 import {
   updateBubblePosition,
@@ -49,6 +48,7 @@ import {
   drawBubble,
   drawParticle,
   isParticleAtTarget,
+  updateStaticModeLayerParticle,
 } from './particle-utils';
 import {effectOptions} from './animation-utils/animation-config';
 
@@ -308,77 +308,7 @@ const handleBubbleEmission = (particle: Particle, requestAnimationFrameTime: num
   }
 };
 
-/**
- * Handles static mode particle rendering with gaps, color cycling, and size interpolation for a specific layer
- */
-const renderStaticModeParticleLayer = (
-  particle: Particle,
-  elapsedTime: number,
-  layerIndex: number,
-  layerOffsetDistance: number,
-  layerOffsetAngle: number
-): void => {
-  // Calculate layer offset position
-  const angleRad = (layerOffsetAngle * Math.PI) / 180;
-  const offsetX = Math.cos(angleRad) * layerOffsetDistance * layerIndex;
-  const offsetY = Math.sin(angleRad) * layerOffsetDistance * layerIndex;
 
-  // Position handling: apply gap or use target positions, then add layer offset
-  if (workerState.appProps.particleGap > 0) {
-    // Apply gap by scaling positions from text center
-    const textCenterX = (workerState.textBoundaries!.minX + workerState.textBoundaries!.maxX) / 2;
-    const textCenterY = (workerState.textBoundaries!.minY + workerState.textBoundaries!.maxY) / 2;
-
-    // Calculate offset from center
-    const offsetFromCenterX = particle.targetX - textCenterX;
-    const offsetFromCenterY = particle.targetY - textCenterY;
-
-    // Scale the offset to create gaps (1.0 = no gap, higher = larger gaps)
-    const gapScale = 1 + (workerState.appProps.particleGap / 50);
-
-    particle.x = textCenterX + offsetFromCenterX * gapScale + offsetX;
-    particle.y = textCenterY + offsetFromCenterY * gapScale + offsetY;
-  } else {
-    // No gap: use original target positions with layer offset
-    particle.x = particle.targetX + offsetX;
-    particle.y = particle.targetY + offsetY;
-  }
-
-  // Generate consistent particle-specific offset (0-interpolationOffset ms)
-  const particleHash = (particle.initialX * 9301 + particle.initialY * 49297) % 23;
-  const particleOffset = (particleHash / 23) * workerState.appProps.interpolationOffset;
-  const offsetElapsedTime = elapsedTime + particleOffset;
-
-  // Color cycling with individual offset
-  // Use layer-specific color if available, otherwise use particle colors
-  if (workerState.appProps.layerColors.length > layerIndex && workerState.appProps.layerColors[layerIndex]) {
-    // Use the specific color for this layer
-    particle.color = workerState.appProps.layerColors[layerIndex];
-  } else if (workerState.appProps.particleColors.length > 0) {
-    // Use cycling particle colors
-    const colorProgress = (offsetElapsedTime % workerState.appProps.animationDuration) / workerState.appProps.animationDuration;
-    particle.color = getColorFromProgressCyclic(workerState.appProps.particleColors, colorProgress);
-  }
-
-  // Size interpolation for random particles
-  if (workerState.appProps.sizeInterpolationPercentage > 0) {
-    const randomValue = particleHash / 23; // Normalize to 0-1
-    const shouldInterpolate = randomValue < (workerState.appProps.sizeInterpolationPercentage / 100);
-
-    if (shouldInterpolate) {
-      // Create a pulsing effect with individual offset: oscillate between 50% and configurable max size
-      const maxScale = workerState.appProps.sizeInterpolationMax;
-      const minScale = 0.5;
-      const scaleRange = maxScale - minScale;
-      const sizeProgress = Math.sin(offsetElapsedTime * 0.003) * (scaleRange / 2) + (minScale + maxScale) / 2;
-      particle.scale = sizeProgress;
-    } else {
-      particle.scale = 1.0; // Default scale for non-interpolating particles
-    }
-  } else {
-    particle.scale = 1.0; // Default scale when interpolation is disabled
-  }
-};
 
 const renderMainParticles = (
   animationStartTime: number,
@@ -396,17 +326,29 @@ const renderMainParticles = (
       // Set global alpha for this layer
       workerState.frameContext!.globalAlpha = layerOpacity;
 
+      const layerInterpolationOffset = workerState.appProps.interpolationOffset - (workerState.appProps.layerOffsetDistance * layerIndex);
+
       workerState.workerParticles.forEach((particle) => {
         if (particle.delay > elapsedTime) return;
 
         // Create a temporary particle copy for this layer
         const layerParticle = {...particle};
-        renderStaticModeParticleLayer(
-          layerParticle,
-          elapsedTime,
-          layerIndex,
-          workerState.appProps.layerOffsetDistance,
-          workerState.appProps.layerOffsetAngle
+        updateStaticModeLayerParticle(
+          {
+            particle: layerParticle,
+            elapsedTime,
+            layerIndex,
+            layerOffsetDistance: workerState.appProps.layerOffsetDistance,
+            layerOffsetAngle: workerState.appProps.layerOffsetAngle,
+            particleGap: workerState.appProps.particleGap,
+            textBoundaries: workerState.textBoundaries!,
+            interpolationOffset: layerInterpolationOffset,
+            layerColors: workerState.appProps.layerColors,
+            particleColors: workerState.appProps.particleColors,
+            animationDuration: workerState.appProps.animationDuration,
+            sizeInterpolationPercentage: workerState.appProps.sizeInterpolationPercentage,
+            sizeInterpolationMax: workerState.appProps.sizeInterpolationMax
+          }
         );
 
         drawParticle({
@@ -419,11 +361,6 @@ const renderMainParticles = (
           enableImageParticles: workerState.appProps.enableImageParticles,
           enableStaticMode: workerState.appProps.enableStaticMode,
         });
-
-        // Only handle bubble emission for the front layer (layer 0)
-        if (layerIndex === 0) {
-          handleBubbleEmission(layerParticle, requestAnimationFrameTime);
-        }
       });
     }
 
