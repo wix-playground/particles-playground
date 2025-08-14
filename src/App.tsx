@@ -16,6 +16,7 @@ import {useImageLoader} from './hooks/useImageLoader';
 import {AppContext} from './contexts/AppContext';
 import {WorkerContext} from './contexts/WorkerContext';
 import {Editor} from './components/Editor/Editor';
+import {ShareButton} from './components/ShareButton';
 import {loadJsonFromSnippet} from './snippet';
 import {formatCode, getFontString} from './utils';
 
@@ -162,6 +163,7 @@ const App = () => {
                 <div className={styles['canvas-header']}>
                   <h1 className={styles['canvas-title']}>Canvas</h1>
                   <div className={styles['canvas-controls']}>
+                    <ShareButton />
                     <button onClick={play}>Play animation</button>
                   </div>
                 </div>

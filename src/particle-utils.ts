@@ -182,7 +182,11 @@ export const drawCircleParticle = ({
   const centerX = Math.floor(particle.x) + particleRadius / 2;
   const centerY = Math.floor(particle.y) + particleRadius / 2;
 
-  context.globalAlpha = particle.opacity || 1;
+  // In static mode, preserve the layer opacity set by the caller
+  // Otherwise, use particle opacity
+  if (!enableStaticMode) {
+    context.globalAlpha = particle.opacity || 1;
+  }
   context.beginPath();
   context.arc(
     centerX,

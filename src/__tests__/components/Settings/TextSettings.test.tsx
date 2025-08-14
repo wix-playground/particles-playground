@@ -2,7 +2,7 @@ import {render, screen} from '@testing-library/react';
 import {TextSettings} from '../../../components/Settings/TextSettings';
 import {AppContext} from '../../../contexts/AppContext';
 import {WorkerContext} from '../../../contexts/WorkerContext';
-import {DATA_TEST_IDS, DEFAULT_ANIMATION_DURATION, DEFAULT_DELAY, DEFAULT_ENABLE_BUBBLES, DEFAULT_ENABLE_IMAGE_PARTICLES, DEFAULT_ENABLE_STATIC_MODE, DEFAULT_PARTICLE_GAP, DEFAULT_SIZE_INTERPOLATION_PERCENTAGE, DEFAULT_INTERPOLATION_OFFSET, DEFAULT_SIZE_INTERPOLATION_MAX, DEFAULT_FONT_STATE} from '../../../constants';
+import {DATA_TEST_IDS, DEFAULT_ANIMATION_DURATION, DEFAULT_DELAY, DEFAULT_ENABLE_BUBBLES, DEFAULT_ENABLE_IMAGE_PARTICLES, DEFAULT_ENABLE_STATIC_MODE, DEFAULT_PARTICLE_GAP, DEFAULT_SIZE_INTERPOLATION_PERCENTAGE, DEFAULT_INTERPOLATION_OFFSET, DEFAULT_SIZE_INTERPOLATION_MAX, DEFAULT_LAYER_COUNT, DEFAULT_LAYER_OFFSET_DISTANCE, DEFAULT_LAYER_OFFSET_ANGLE, DEFAULT_LAYER_OPACITY_DECAY, DEFAULT_LAYER_COLORS, DEFAULT_FONT_STATE} from '../../../constants';
 import {AppProps, FontState} from '../../../interfaces';
 import {effectOptions} from '../../../animation-utils/animation-config';
 
@@ -49,6 +49,11 @@ describe('TextSettings', () => {
       sizeInterpolationPercentage: DEFAULT_SIZE_INTERPOLATION_PERCENTAGE,
       interpolationOffset: DEFAULT_INTERPOLATION_OFFSET,
       sizeInterpolationMax: DEFAULT_SIZE_INTERPOLATION_MAX,
+      layerCount: DEFAULT_LAYER_COUNT,
+      layerOffsetDistance: DEFAULT_LAYER_OFFSET_DISTANCE,
+      layerOffsetAngle: DEFAULT_LAYER_OFFSET_ANGLE,
+      layerOpacityDecay: DEFAULT_LAYER_OPACITY_DECAY,
+      layerColors: DEFAULT_LAYER_COLORS,
     };
 
     // Create mock worker
@@ -120,6 +125,11 @@ describe('TextSettings', () => {
       sizeInterpolationPercentage: DEFAULT_SIZE_INTERPOLATION_PERCENTAGE,
       interpolationOffset: DEFAULT_INTERPOLATION_OFFSET,
       sizeInterpolationMax: DEFAULT_SIZE_INTERPOLATION_MAX,
+      layerCount: DEFAULT_LAYER_COUNT,
+      layerOffsetDistance: DEFAULT_LAYER_OFFSET_DISTANCE,
+      layerOffsetAngle: DEFAULT_LAYER_OFFSET_ANGLE,
+      layerOpacityDecay: DEFAULT_LAYER_OPACITY_DECAY,
+      layerColors: DEFAULT_LAYER_COLORS,
     };
 
     // Create mock worker

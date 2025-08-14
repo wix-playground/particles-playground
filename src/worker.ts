@@ -15,6 +15,11 @@ import {
   DEFAULT_SIZE_INTERPOLATION_PERCENTAGE,
   DEFAULT_INTERPOLATION_OFFSET,
   DEFAULT_SIZE_INTERPOLATION_MAX,
+  DEFAULT_LAYER_COUNT,
+  DEFAULT_LAYER_OFFSET_DISTANCE,
+  DEFAULT_LAYER_OFFSET_ANGLE,
+  DEFAULT_LAYER_OPACITY_DECAY,
+  DEFAULT_LAYER_COLORS,
   BUBBLE_PARTICLE_LIFETIME,
 } from './constants';
 import {
@@ -84,6 +89,11 @@ const defaultAppProps: AppProps = {
   sizeInterpolationPercentage: DEFAULT_SIZE_INTERPOLATION_PERCENTAGE,
   interpolationOffset: DEFAULT_INTERPOLATION_OFFSET,
   sizeInterpolationMax: DEFAULT_SIZE_INTERPOLATION_MAX,
+  layerCount: DEFAULT_LAYER_COUNT,
+  layerOffsetDistance: DEFAULT_LAYER_OFFSET_DISTANCE,
+  layerOffsetAngle: DEFAULT_LAYER_OFFSET_ANGLE,
+  layerOpacityDecay: DEFAULT_LAYER_OPACITY_DECAY,
+  layerColors: DEFAULT_LAYER_COLORS,
 };
 
 const workerState: {
@@ -299,28 +309,39 @@ const handleBubbleEmission = (particle: Particle, requestAnimationFrameTime: num
 };
 
 /**
- * Handles static mode particle rendering with gaps, color cycling, and size interpolation
+ * Handles static mode particle rendering with gaps, color cycling, and size interpolation for a specific layer
  */
-const renderStaticModeParticle = (particle: Particle, elapsedTime: number): void => {
-  // Position handling: apply gap or use target positions
+const renderStaticModeParticleLayer = (
+  particle: Particle,
+  elapsedTime: number,
+  layerIndex: number,
+  layerOffsetDistance: number,
+  layerOffsetAngle: number
+): void => {
+  // Calculate layer offset position
+  const angleRad = (layerOffsetAngle * Math.PI) / 180;
+  const offsetX = Math.cos(angleRad) * layerOffsetDistance * layerIndex;
+  const offsetY = Math.sin(angleRad) * layerOffsetDistance * layerIndex;
+
+  // Position handling: apply gap or use target positions, then add layer offset
   if (workerState.appProps.particleGap > 0) {
     // Apply gap by scaling positions from text center
     const textCenterX = (workerState.textBoundaries!.minX + workerState.textBoundaries!.maxX) / 2;
     const textCenterY = (workerState.textBoundaries!.minY + workerState.textBoundaries!.maxY) / 2;
 
     // Calculate offset from center
-    const offsetX = particle.targetX - textCenterX;
-    const offsetY = particle.targetY - textCenterY;
+    const offsetFromCenterX = particle.targetX - textCenterX;
+    const offsetFromCenterY = particle.targetY - textCenterY;
 
     // Scale the offset to create gaps (1.0 = no gap, higher = larger gaps)
     const gapScale = 1 + (workerState.appProps.particleGap / 50);
 
-    particle.x = textCenterX + offsetX * gapScale;
-    particle.y = textCenterY + offsetY * gapScale;
+    particle.x = textCenterX + offsetFromCenterX * gapScale + offsetX;
+    particle.y = textCenterY + offsetFromCenterY * gapScale + offsetY;
   } else {
-    // No gap: use original target positions
-    particle.x = particle.targetX;
-    particle.y = particle.targetY;
+    // No gap: use original target positions with layer offset
+    particle.x = particle.targetX + offsetX;
+    particle.y = particle.targetY + offsetY;
   }
 
   // Generate consistent particle-specific offset (0-interpolationOffset ms)
@@ -329,7 +350,12 @@ const renderStaticModeParticle = (particle: Particle, elapsedTime: number): void
   const offsetElapsedTime = elapsedTime + particleOffset;
 
   // Color cycling with individual offset
-  if (workerState.appProps.particleColors.length > 0) {
+  // Use layer-specific color if available, otherwise use particle colors
+  if (workerState.appProps.layerColors.length > layerIndex && workerState.appProps.layerColors[layerIndex]) {
+    // Use the specific color for this layer
+    particle.color = workerState.appProps.layerColors[layerIndex];
+  } else if (workerState.appProps.particleColors.length > 0) {
+    // Use cycling particle colors
     const colorProgress = (offsetElapsedTime % workerState.appProps.animationDuration) / workerState.appProps.animationDuration;
     particle.color = getColorFromProgressCyclic(workerState.appProps.particleColors, colorProgress);
   }
@@ -361,37 +387,77 @@ const renderMainParticles = (
   const elapsedTime = requestAnimationFrameTime - animationStartTime;
   let allParticlesReached = true;
 
-  workerState.workerParticles.forEach((particle) => {
-    if (workerState.appProps.enableStaticMode) {
-      renderStaticModeParticle(particle, elapsedTime);
-    } else {
+  if (workerState.appProps.enableStaticMode) {
+    // Render particles in multiple layers (back to front)
+    for (let layerIndex = workerState.appProps.layerCount - 1; layerIndex >= 0; layerIndex--) {
+      const layerOpacity = layerIndex === 0 ? 1.0 :
+        Math.max(0.1, 1.0 - (layerIndex * workerState.appProps.layerOpacityDecay));
+
+      // Set global alpha for this layer
+      workerState.frameContext!.globalAlpha = layerOpacity;
+
+      workerState.workerParticles.forEach((particle) => {
+        if (particle.delay > elapsedTime) return;
+
+        // Create a temporary particle copy for this layer
+        const layerParticle = {...particle};
+        renderStaticModeParticleLayer(
+          layerParticle,
+          elapsedTime,
+          layerIndex,
+          workerState.appProps.layerOffsetDistance,
+          workerState.appProps.layerOffsetAngle
+        );
+
+        drawParticle({
+          particle: layerParticle,
+          context: workerState.frameContext!,
+          particleRadius: workerState.appProps.particleRadius,
+          particleColors: workerState.appProps.particleColors,
+          revealProgress: workerState.revealProgress,
+          imageBitmap: workerState.imageBitmap!,
+          enableImageParticles: workerState.appProps.enableImageParticles,
+          enableStaticMode: workerState.appProps.enableStaticMode,
+        });
+
+        // Only handle bubble emission for the front layer (layer 0)
+        if (layerIndex === 0) {
+          handleBubbleEmission(layerParticle, requestAnimationFrameTime);
+        }
+      });
+    }
+
+    // Reset global alpha
+    workerState.frameContext!.globalAlpha = 1.0;
+  } else {
+    // Regular non-static mode rendering
+    workerState.workerParticles.forEach((particle) => {
       // Use regular movement function
       updateParticlePosition(particle, animationStartTime, requestAnimationFrameTime, workerState.textBoundaries!);
 
-    }
+      // Do not render particles that are delayed
+      if (particle.delay > elapsedTime) {
+        return;
+      }
 
-    // Do not render particles that are delayed
-    if (particle.delay > elapsedTime) {
-      return;
-    }
+      drawParticle({
+        particle,
+        context: workerState.frameContext!,
+        particleRadius: workerState.appProps.particleRadius,
+        particleColors: workerState.appProps.particleColors,
+        revealProgress: workerState.revealProgress,
+        imageBitmap: workerState.imageBitmap!,
+        enableImageParticles: workerState.appProps.enableImageParticles,
+        enableStaticMode: workerState.appProps.enableStaticMode,
+      });
+      handleBubbleEmission(particle, requestAnimationFrameTime);
 
-    drawParticle({
-      particle,
-      context: workerState.frameContext!,
-      particleRadius: workerState.appProps.particleRadius,
-      particleColors: workerState.appProps.particleColors,
-      revealProgress: workerState.revealProgress,
-      imageBitmap: workerState.imageBitmap!,
-      enableImageParticles: workerState.appProps.enableImageParticles,
-      enableStaticMode: workerState.appProps.enableStaticMode,
+      if (!isParticleAtTarget(particle) &&
+        workerState.revealProgress >= 0.99) {
+        allParticlesReached = false;
+      }
     });
-    handleBubbleEmission(particle, requestAnimationFrameTime);
-
-    if (!isParticleAtTarget(particle) &&
-      workerState.revealProgress >= 0.99) {
-      allParticlesReached = false;
-    }
-  });
+  }
 
   return allParticlesReached;
 };
@@ -818,6 +884,86 @@ self.onmessage = (event: MessageEvent<MainThreadMessage>) => {
     }
     case Action.UPDATE_SIZE_INTERPOLATION_MAX: {
       workerState.appProps.sizeInterpolationMax = payload;
+
+      self.postMessage({
+        type: WorkerAction.UPDATE_APP_PROPS,
+        data: workerState.appProps,
+      });
+
+      // Update particles immediately if in static mode and animation is running
+      if (workerState.appProps.enableStaticMode && workerState.animationFrameId) {
+        cancelAnimationFrame(workerState.animationFrameId);
+        const startTime = performance.now();
+        renderParticles(startTime, startTime);
+      }
+      break;
+    }
+    case Action.UPDATE_LAYER_COUNT: {
+      workerState.appProps.layerCount = payload;
+
+      self.postMessage({
+        type: WorkerAction.UPDATE_APP_PROPS,
+        data: workerState.appProps,
+      });
+
+      // Update particles immediately if in static mode and animation is running
+      if (workerState.appProps.enableStaticMode && workerState.animationFrameId) {
+        cancelAnimationFrame(workerState.animationFrameId);
+        const startTime = performance.now();
+        renderParticles(startTime, startTime);
+      }
+      break;
+    }
+    case Action.UPDATE_LAYER_OFFSET_DISTANCE: {
+      workerState.appProps.layerOffsetDistance = payload;
+
+      self.postMessage({
+        type: WorkerAction.UPDATE_APP_PROPS,
+        data: workerState.appProps,
+      });
+
+      // Update particles immediately if in static mode and animation is running
+      if (workerState.appProps.enableStaticMode && workerState.animationFrameId) {
+        cancelAnimationFrame(workerState.animationFrameId);
+        const startTime = performance.now();
+        renderParticles(startTime, startTime);
+      }
+      break;
+    }
+    case Action.UPDATE_LAYER_OFFSET_ANGLE: {
+      workerState.appProps.layerOffsetAngle = payload;
+
+      self.postMessage({
+        type: WorkerAction.UPDATE_APP_PROPS,
+        data: workerState.appProps,
+      });
+
+      // Update particles immediately if in static mode and animation is running
+      if (workerState.appProps.enableStaticMode && workerState.animationFrameId) {
+        cancelAnimationFrame(workerState.animationFrameId);
+        const startTime = performance.now();
+        renderParticles(startTime, startTime);
+      }
+      break;
+    }
+    case Action.UPDATE_LAYER_OPACITY_DECAY: {
+      workerState.appProps.layerOpacityDecay = payload;
+
+      self.postMessage({
+        type: WorkerAction.UPDATE_APP_PROPS,
+        data: workerState.appProps,
+      });
+
+      // Update particles immediately if in static mode and animation is running
+      if (workerState.appProps.enableStaticMode && workerState.animationFrameId) {
+        cancelAnimationFrame(workerState.animationFrameId);
+        const startTime = performance.now();
+        renderParticles(startTime, startTime);
+      }
+      break;
+    }
+    case Action.UPDATE_LAYER_COLORS: {
+      workerState.appProps.layerColors = payload;
 
       self.postMessage({
         type: WorkerAction.UPDATE_APP_PROPS,
