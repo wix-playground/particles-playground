@@ -2,7 +2,7 @@ import {render, screen} from '@testing-library/react';
 import {TextSettings} from '../../../components/Settings/TextSettings';
 import {AppContext} from '../../../contexts/AppContext';
 import {WorkerContext} from '../../../contexts/WorkerContext';
-import {DATA_TEST_IDS, DEFAULT_ANIMATION_DURATION, DEFAULT_DELAY, DEFAULT_ENABLE_BUBBLES, DEFAULT_ENABLE_IMAGE_PARTICLES, DEFAULT_FONT_STATE} from '../../../constants';
+import {DATA_TEST_IDS, DEFAULT_ANIMATION_DURATION, DEFAULT_DELAY, DEFAULT_ENABLE_BUBBLES, DEFAULT_ENABLE_IMAGE_PARTICLES, DEFAULT_ENABLE_STATIC_MODE, DEFAULT_PARTICLE_GAP, DEFAULT_SIZE_INTERPOLATION_PERCENTAGE, DEFAULT_INTERPOLATION_OFFSET, DEFAULT_SIZE_INTERPOLATION_MAX, DEFAULT_FONT_STATE} from '../../../constants';
 import {AppProps, FontState} from '../../../interfaces';
 import {effectOptions} from '../../../animation-utils/animation-config';
 
@@ -43,6 +43,11 @@ describe('TextSettings', () => {
       delay: DEFAULT_DELAY,
       enableBubbles: DEFAULT_ENABLE_BUBBLES,
       enableImageParticles: DEFAULT_ENABLE_IMAGE_PARTICLES,
+      enableStaticMode: DEFAULT_ENABLE_STATIC_MODE,
+      particleGap: DEFAULT_PARTICLE_GAP,
+      sizeInterpolationPercentage: DEFAULT_SIZE_INTERPOLATION_PERCENTAGE,
+      interpolationOffset: DEFAULT_INTERPOLATION_OFFSET,
+      sizeInterpolationMax: DEFAULT_SIZE_INTERPOLATION_MAX,
     };
 
     // Create mock worker
@@ -108,6 +113,11 @@ describe('TextSettings', () => {
       delay: DEFAULT_DELAY,
       enableBubbles: DEFAULT_ENABLE_BUBBLES,
       enableImageParticles: DEFAULT_ENABLE_IMAGE_PARTICLES,
+      enableStaticMode: DEFAULT_ENABLE_STATIC_MODE,
+      particleGap: DEFAULT_PARTICLE_GAP,
+      sizeInterpolationPercentage: DEFAULT_SIZE_INTERPOLATION_PERCENTAGE,
+      interpolationOffset: DEFAULT_INTERPOLATION_OFFSET,
+      sizeInterpolationMax: DEFAULT_SIZE_INTERPOLATION_MAX,
     };
 
     // Create mock worker

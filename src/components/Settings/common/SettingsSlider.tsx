@@ -13,6 +13,7 @@ export interface SettingsSliderProps {
   disabled?: boolean;
   fullWidth?: boolean;
   useModuleStyles?: boolean; // Whether to use CSS modules or plain classes
+  'data-testid'?: string;
 }
 
 export const SettingsSlider: React.FC<SettingsSliderProps> = ({
@@ -26,7 +27,8 @@ export const SettingsSlider: React.FC<SettingsSliderProps> = ({
   className = '',
   disabled = false,
   fullWidth = false,
-  useModuleStyles = true
+  useModuleStyles = true,
+  'data-testid': dataTestId
 }) => {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = parseFloat(event.target.value);
@@ -68,6 +70,7 @@ export const SettingsSlider: React.FC<SettingsSliderProps> = ({
           value={value}
           onChange={handleChange}
           disabled={disabled}
+          data-testid={dataTestId}
         />
         <span>{displayValue}</span>
       </div>
@@ -89,6 +92,7 @@ export const SettingsSlider: React.FC<SettingsSliderProps> = ({
               value={value}
               onChange={handleChange}
               disabled={disabled}
+              data-testid={dataTestId}
             />
             <span className={valueClass}>{displayValue}</span>
           </div>
@@ -105,6 +109,7 @@ export const SettingsSlider: React.FC<SettingsSliderProps> = ({
             value={value}
             onChange={handleChange}
             disabled={disabled}
+            data-testid={dataTestId}
           />
           <span className={valueClass}>{displayValue}</span>
         </>

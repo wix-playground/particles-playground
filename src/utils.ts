@@ -99,6 +99,36 @@ export const getColorFromProgress = (colors: string[], progress: number): string
   return rgbToHex(r, g, b);
 };
 
+// Get color based on progress with seamless cycling (loops smoothly back to first color)
+export const getColorFromProgressCyclic = (colors: string[], progress: number): string => {
+  if (!colors?.length) return '#ffffff';
+  if (colors.length === 1) return colors[0];
+
+  // Ensure progress is between 0 and 1
+  const clampedProgress = Math.max(0, Math.min(1, progress));
+
+  // For cyclic colors, we treat the array as a loop where the last color transitions back to the first
+  // This means we have colors.length segments instead of colors.length - 1
+  const segment = clampedProgress * colors.length;
+  const segmentIndex = Math.floor(segment) % colors.length;
+  const nextIndex = (segmentIndex + 1) % colors.length;
+
+  // Calculate interpolation value within this segment (0-1)
+  const segmentProgress = segment - Math.floor(segment);
+
+  // Get the two colors to interpolate between
+  const color1 = hexToRgb(colors[segmentIndex]);
+  const color2 = hexToRgb(colors[nextIndex]);
+
+  // Interpolate RGB values
+  const r = Math.round(lerp(color1.r, color2.r, segmentProgress));
+  const g = Math.round(lerp(color1.g, color2.g, segmentProgress));
+  const b = Math.round(lerp(color1.b, color2.b, segmentProgress));
+
+  // Convert back to hex
+  return rgbToHex(r, g, b);
+};
+
 export const calculateDistance = (point1: Coordinates, point2: Coordinates) => {
   const dx = point2.x - point1.x;
   const dy = point2.y - point1.y;

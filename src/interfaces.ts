@@ -65,6 +65,11 @@ export enum Action {
   UPDATE_DELAY = 'UPDATE_DELAY',
   UPDATE_ENABLE_BUBBLES = 'UPDATE_ENABLE_BUBBLES',
   UPDATE_ENABLE_IMAGE_PARTICLES = 'UPDATE_ENABLE_IMAGE_PARTICLES',
+  UPDATE_ENABLE_STATIC_MODE = 'UPDATE_ENABLE_STATIC_MODE',
+  UPDATE_PARTICLE_GAP = 'UPDATE_PARTICLE_GAP',
+  UPDATE_SIZE_INTERPOLATION_PERCENTAGE = 'UPDATE_SIZE_INTERPOLATION_PERCENTAGE',
+  UPDATE_INTERPOLATION_OFFSET = 'UPDATE_INTERPOLATION_OFFSET',
+  UPDATE_SIZE_INTERPOLATION_MAX = 'UPDATE_SIZE_INTERPOLATION_MAX',
 }
 
 export enum WorkerAction {
@@ -156,6 +161,31 @@ export const getUpdateDelayMessage = (payload: number) => ({
   payload,
 });
 
+export const getUpdateEnableStaticModeMessage = (payload: boolean) => ({
+  type: Action.UPDATE_ENABLE_STATIC_MODE as const,
+  payload,
+});
+
+export const getUpdateParticleGapMessage = (payload: number) => ({
+  type: Action.UPDATE_PARTICLE_GAP as const,
+  payload,
+});
+
+export const getUpdateSizeInterpolationPercentageMessage = (payload: number) => ({
+  type: Action.UPDATE_SIZE_INTERPOLATION_PERCENTAGE as const,
+  payload,
+});
+
+export const getUpdateInterpolationOffsetMessage = (payload: number) => ({
+  type: Action.UPDATE_INTERPOLATION_OFFSET as const,
+  payload,
+});
+
+export const getUpdateSizeInterpolationMaxMessage = (payload: number) => ({
+  type: Action.UPDATE_SIZE_INTERPOLATION_MAX as const,
+  payload,
+});
+
 export const getUpdateSelectedEffectMessage = (payload: EffectType | null) => ({
   type: Action.UPDATE_SELECTED_EFFECT as const,
   payload,
@@ -184,7 +214,12 @@ export type MainThreadMessage =
   | ReturnType<typeof getUpdateAnimationDurationMessage>
   | ReturnType<typeof getUpdateDelayMessage>
   | ReturnType<typeof getUpdateEnableBubblesMessage>
-  | ReturnType<typeof getUpdateEnableImageParticlesMessage>;
+  | ReturnType<typeof getUpdateEnableImageParticlesMessage>
+  | ReturnType<typeof getUpdateEnableStaticModeMessage>
+  | ReturnType<typeof getUpdateParticleGapMessage>
+  | ReturnType<typeof getUpdateSizeInterpolationPercentageMessage>
+  | ReturnType<typeof getUpdateInterpolationOffsetMessage>
+  | ReturnType<typeof getUpdateSizeInterpolationMaxMessage>;
 
 export const fontFamilies = [
   'Arial',
@@ -228,6 +263,11 @@ export interface AppProps {
   delay: number;
   enableBubbles: boolean;
   enableImageParticles: boolean;
+  enableStaticMode: boolean;
+  particleGap: number;
+  sizeInterpolationPercentage: number;
+  interpolationOffset: number;
+  sizeInterpolationMax: number;
 }
 
 export type TextBoundaries = Dimensions & {
