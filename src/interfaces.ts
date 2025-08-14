@@ -254,6 +254,7 @@ export interface AppProps {
     SCANNING: EffectConfigurations['SCANNING'];
     EXPLOSION: EffectConfigurations['EXPLOSION'];
     HELIX_SPIRAL: EffectConfigurations['HELIX_SPIRAL'];
+    PERLIN: EffectConfigurations['PERLIN'];
   };
   particleRadius: number;
   text: string;

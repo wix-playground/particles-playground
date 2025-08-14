@@ -18,6 +18,7 @@ export const EffectTypes = {
   SCANNING: 'SCANNING',
   EXPLOSION: 'EXPLOSION',
   HELIX_SPIRAL: 'HELIX_SPIRAL',
+  PERLIN: 'PERLIN',
 } as const
 
 export type EffectType = typeof EffectTypes[keyof typeof EffectTypes];
@@ -80,6 +81,13 @@ export type EffectConfigurations = {
     easingType: EasingType, // Easing function for the movement (default: 'ease-in-out-quint')
     perspective: number, // 3D perspective strength (default: 800)
     affectOpacity: boolean, // Whether opacity is affected by easing (default: true)
+  }
+  PERLIN: {
+    driftSpeed: number, // How fast the noise pattern drifts (default: 0.0005)
+    effectStrength: number, // Overall strength of the noise effect (default: 3)
+    noiseScale: number, // Scale of the noise pattern (default: 600)
+    constantSpacing: number, // Fixed distance particles orbit from target (default: 100)
+    scaleMultiplier: number, // Multiplier for particle scaling effect (default: 2.5)
   }
 }
 

@@ -1,5 +1,6 @@
 import {easingConfig, easingConfigString} from "./easing-config";
 import {EffectConfigurations, EffectOption, EffectTypes} from "./interfaces";
+import {perlin2} from "./perlin";
 
 const superSwirlEffectOption: EffectOption<'SUPER_SWIRL'> = {
   factory: (config) => {
@@ -237,7 +238,7 @@ const buildEffectOption: EffectOption<'BUILD'> = {
     startPosition: true,
     delay: true,
   },
-  getCode: (config: EffectConfigurations['BUILD']) => ` 
+  getCode: (config: EffectConfigurations['BUILD']) => `
     return (() => {
       const config = ${JSON.stringify(config, null, 2)};
 
@@ -1359,6 +1360,187 @@ const helixSpiralEffectOption: EffectOption<'HELIX_SPIRAL'> = {
   `
 }
 
+const perlinEffectOption: EffectOption<'PERLIN'> = {
+  factory: (config) => {
+    return (particle, animationStartTime, currentTime, _canvasDimensions, _animationDuration) => {
+      const {driftSpeed, effectStrength, noiseScale, constantSpacing, scaleMultiplier} = config;
+
+      // Calculate a time-based offset for drifting noise
+      const timeOffset = (currentTime - animationStartTime) * driftSpeed;
+
+      // Define base coordinates for sampling from the noise field
+      const noiseX = particle.targetX / noiseScale;
+      const noiseY = particle.targetY / noiseScale;
+
+      // Sample two different points in the noise field, adding the time offset to make it drift
+      const visualNoise = (perlin2(noiseX + timeOffset, noiseY) + 1) / 2;
+      const positionNoise = (perlin2(noiseX + 10 + timeOffset, noiseY + 10 + timeOffset) + 1) / 2;
+
+      // Apply visual effects: scale based on noise
+      const visualEffectAmount = visualNoise * effectStrength;
+      particle.scale = 1 + visualEffectAmount * scaleMultiplier;
+
+      // Apply positional offset: particles orbit their target at a fixed distance
+      const angle = positionNoise * Math.PI * 2;
+      const offsetX = Math.cos(angle) * constantSpacing;
+      const offsetY = Math.sin(angle) * constantSpacing;
+
+      particle.x = particle.targetX + offsetX;
+      particle.y = particle.targetY + offsetY;
+    };
+  },
+  defaultConfig: {
+    driftSpeed: 0.0005,
+    effectStrength: 3,
+    noiseScale: 600,
+    constantSpacing: 100,
+    scaleMultiplier: 2.5,
+  },
+  commonControls: {
+  },
+  getCode: (config: EffectConfigurations['PERLIN']) => `return (() => {
+  const config = ${JSON.stringify(config, null, 2)};
+
+  class Grad {
+    constructor(x, y, z) {
+      this.x = x;
+      this.y = y;
+      this.z = z;
+    }
+
+    dot2(x, y) {
+      return this.x * x + this.y * y;
+    }
+  }
+
+  const lerp = (start, end, progress) =>
+    start + (end - start) * progress;
+
+
+  const grad3 = [
+    new Grad(1, 1, 0),
+    new Grad(-1, 1, 0),
+    new Grad(1, -1, 0),
+    new Grad(-1, -1, 0),
+    new Grad(1, 0, 1),
+    new Grad(-1, 0, 1),
+    new Grad(1, 0, -1),
+    new Grad(-1, 0, -1),
+    new Grad(0, 1, 1),
+    new Grad(0, -1, 1),
+    new Grad(0, 1, -1),
+    new Grad(0, -1, -1),
+  ];
+
+  const p = [
+    151, 160, 137, 91, 90, 15, 131, 13, 201, 95, 96, 53, 194, 233, 7, 225, 140,
+    36, 103, 30, 69, 142, 8, 99, 37, 240, 21, 10, 23, 190, 6, 148, 247, 120, 234,
+    75, 0, 26, 197, 62, 94, 252, 219, 203, 117, 35, 11, 32, 57, 177, 33, 88, 237,
+    149, 56, 87, 174, 20, 125, 136, 171, 168, 68, 175, 74, 165, 71, 134, 139, 48,
+    27, 166, 77, 146, 158, 231, 83, 111, 229, 122, 60, 211, 133, 230, 220, 105,
+    92, 41, 55, 46, 245, 40, 244, 102, 143, 54, 65, 25, 63, 161, 1, 216, 80, 73,
+    209, 76, 132, 187, 208, 89, 18, 169, 200, 196, 135, 130, 116, 188, 159, 86,
+    164, 100, 109, 198, 173, 186, 3, 64, 52, 217, 226, 250, 124, 123, 5, 202, 38,
+    147, 118, 126, 255, 82, 85, 212, 207, 206, 59, 227, 47, 16, 58, 17, 182, 189,
+    28, 42, 223, 183, 170, 213, 119, 248, 152, 2, 44, 154, 163, 70, 221, 153, 101,
+    155, 167, 43, 172, 9, 129, 22, 39, 253, 19, 98, 108, 110, 79, 113, 224, 232,
+    178, 185, 112, 104, 218, 246, 97, 228, 251, 34, 242, 193, 238, 210, 144, 12,
+    191, 179, 162, 241, 81, 51, 145, 235, 249, 14, 239, 107, 49, 192, 214, 31,
+    181, 199, 106, 157, 184, 84, 204, 176, 115, 121, 50, 45, 127, 4, 150, 254,
+    138, 236, 205, 93, 222, 114, 67, 29, 24, 72, 243, 141, 128, 195, 78, 66, 215,
+    61, 156, 180,
+  ];
+
+  // To remove the need for index wrapping, double the permutation table length
+  const perm = new Array(512);
+  const gradP = new Array(512);
+
+  // This isn't a very good seeding function, but it works ok. It supports 2^16
+  // different seed values. Write something better if you need more seeds.
+  const seed = (seedValue) => {
+    if (seedValue > 0 && seedValue < 1) {
+      // Scale the seed out
+      seedValue *= 65536;
+    }
+
+    seedValue = Math.floor(seedValue);
+    if (seedValue < 256) {
+      seedValue |= seedValue << 8;
+    }
+
+    for (let i = 0; i < 256; i++) {
+      let v;
+      if (i & 1) {
+        v = p[i] ^ (seedValue & 255);
+      } else {
+        v = p[i] ^ ((seedValue >> 8) & 255);
+      }
+
+      perm[i] = perm[i + 256] = v;
+      gradP[i] = gradP[i + 256] = grad3[v % 12];
+    }
+  };
+
+  seed(0);
+
+  const fade = (t) => {
+    return t * t * t * (t * (t * 6 - 15) + 10);
+  };
+
+  // 2D Perlin Noise
+  const perlin2 = (x, y) => {
+    // Find unit grid cell containing point
+    let X = Math.floor(x);
+    let Y = Math.floor(y);
+    // Get relative xy coordinates of point within that cell
+    x = x - X;
+    y = y - Y;
+    // Wrap the integer cells at 255 (smaller integer period can be introduced here)
+    X = X & 255;
+    Y = Y & 255;
+
+    // Calculate noise contributions from each of the four corners
+    const n00 = gradP[X + perm[Y]].dot2(x, y);
+    const n01 = gradP[X + perm[Y + 1]].dot2(x, y - 1);
+    const n10 = gradP[X + 1 + perm[Y]].dot2(x - 1, y);
+    const n11 = gradP[X + 1 + perm[Y + 1]].dot2(x - 1, y - 1);
+
+    // Compute the fade curve value for x
+    const u = fade(x);
+
+    // Interpolate the four results
+    return lerp(lerp(n00, n10, u), lerp(n01, n11, u), fade(y));
+  };
+  return (particle, animationStartTime, currentTime, canvasDimensions, animationDuration) => {
+    const {driftSpeed, effectStrength, noiseScale, constantSpacing, scaleMultiplier} = config;
+
+    // Calculate a time-based offset for drifting noise
+    const timeOffset = (currentTime - animationStartTime) * driftSpeed;
+
+    // Define base coordinates for sampling from the noise field
+    const noiseX = particle.targetX / noiseScale;
+    const noiseY = particle.targetY / noiseScale;
+
+    // Sample two different points in the noise field, adding the time offset to make it drift
+    const visualNoise = (perlin2(noiseX + timeOffset, noiseY) + 1) / 2;
+    const positionNoise = (perlin2(noiseX + 10 + timeOffset, noiseY + 10 + timeOffset) + 1) / 2;
+
+    // Apply visual effects: scale based on noise
+    const visualEffectAmount = visualNoise * effectStrength;
+    particle.scale = 1 + visualEffectAmount * scaleMultiplier;
+
+    // Apply positional offset: particles orbit their target at a fixed distance
+    const angle = positionNoise * Math.PI * 2;
+    const offsetX = Math.cos(angle) * constantSpacing;
+    const offsetY = Math.sin(angle) * constantSpacing;
+
+    particle.x = particle.targetX + offsetX;
+    particle.y = particle.targetY + offsetY;
+  };
+
+})()`
+}
+
 export const effectOptions = {
   [EffectTypes.SUPER_SWIRL]: superSwirlEffectOption,
   [EffectTypes.BUILD]: buildEffectOption,
@@ -1366,4 +1548,5 @@ export const effectOptions = {
   [EffectTypes.SCANNING]: scanningEffectOption,
   [EffectTypes.EXPLOSION]: explosionEffectOption,
   [EffectTypes.HELIX_SPIRAL]: helixSpiralEffectOption,
+  [EffectTypes.PERLIN]: perlinEffectOption,
 } as const;

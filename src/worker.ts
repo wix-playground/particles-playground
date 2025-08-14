@@ -68,6 +68,7 @@ const defaultAppProps: AppProps = {
     SCANNING: effectOptions.SCANNING.defaultConfig,
     EXPLOSION: effectOptions.EXPLOSION.defaultConfig,
     HELIX_SPIRAL: effectOptions.HELIX_SPIRAL.defaultConfig,
+    PERLIN: effectOptions.PERLIN.defaultConfig,
   },
   movementFunctionCode:
     getPredefinedMovementOptions()[DEFAULT_MOVEMENT_FUNCTION_KEY].code,
@@ -855,6 +856,10 @@ self.onmessage = (event: MessageEvent<MainThreadMessage>) => {
         type: WorkerAction.UPDATE_APP_PROPS,
         data: workerState.appProps,
       });
+
+      // Reset and play animation when effect configuration changes
+      resetState();
+      play();
       break;
     }
     default:
