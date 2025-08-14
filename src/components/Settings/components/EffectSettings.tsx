@@ -10,6 +10,7 @@ import {OppenheimerSettings} from './OppenheimerSettings';
 import {ScanningSettings} from './ScanningSettings';
 import {ExplosionSettings} from './ExplosionSettings';
 import {HelixSpiralSettings} from './HelixSpiralSettings';
+import {PerlinSettings} from './PerlinSettings';
 import {StartPosition} from '../StartPosition';
 import {SettingsButton} from '../common';
 import styles from '../Settings.module.css';
@@ -69,6 +70,7 @@ export const EffectSettings: React.FC = () => {
                   {effect.id === 'SCANNING' && 'Oscillating scan line that settles particles progressively'}
                   {effect.id === 'EXPLOSION' && '3D explosion with configurable depth and orbital settling'}
                   {effect.id === 'HELIX_SPIRAL' && '3D helical spiral with rotating depth and customizable turns'}
+                  {effect.id === 'PERLIN' && 'Perlin noise-based particle animation'}
                 </div>
               </div>
             </SettingsButton>
@@ -127,6 +129,12 @@ export const EffectSettings: React.FC = () => {
           {appProps.selectedEffect === 'HELIX_SPIRAL' && (
             <div className={styles['setting-row']}>
               <HelixSpiralSettings />
+            </div>
+          )}
+
+          {appProps.selectedEffect === 'PERLIN' && (
+            <div className={styles['setting-row']}>
+              <PerlinSettings />
             </div>
           )}
         </>

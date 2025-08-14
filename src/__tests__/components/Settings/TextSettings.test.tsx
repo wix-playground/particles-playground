@@ -33,7 +33,8 @@ describe('TextSettings', () => {
         OPPENHEIMER: effectOptions.OPPENHEIMER.defaultConfig,
         SCANNING: effectOptions.SCANNING.defaultConfig,
         EXPLOSION: {explosionStrength: 1000, deconstructionPhase: 0.4, orbitalRadius: 15, depthOffset: -500},
-        HELIX_SPIRAL: effectOptions.HELIX_SPIRAL.defaultConfig
+        HELIX_SPIRAL: effectOptions.HELIX_SPIRAL.defaultConfig,
+        PERLIN: effectOptions.PERLIN.defaultConfig
       },
       particleRadius: 2,
       text: 'Test',
@@ -103,7 +104,8 @@ describe('TextSettings', () => {
         OPPENHEIMER: effectOptions.OPPENHEIMER.defaultConfig,
         SCANNING: effectOptions.SCANNING.defaultConfig,
         EXPLOSION: effectOptions.EXPLOSION.defaultConfig,
-        HELIX_SPIRAL: effectOptions.HELIX_SPIRAL.defaultConfig
+        HELIX_SPIRAL: effectOptions.HELIX_SPIRAL.defaultConfig,
+        PERLIN: effectOptions.PERLIN.defaultConfig
       },
       particleRadius: 2,
       text: 'Test',
