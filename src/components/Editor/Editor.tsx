@@ -1,4 +1,4 @@
-import {useCallback, useContext, useState} from 'react';
+import {useCallback, useContext} from 'react';
 import {WorkerContext} from '../../contexts/WorkerContext';
 import {getUpdateSelectedMovementFunctionMessage} from '../../interfaces';
 import MonacoEditor from '@monaco-editor/react';
@@ -6,13 +6,9 @@ import {editor} from 'monaco-editor';
 import {AppContext} from '../../contexts/AppContext';
 import {CopyPromptButton} from './CopyPromptButton';
 import {
-  COPIED_TEXT,
-  COPY_SHAREABLE_LINK_TEXT,
   DEFAULT_MOVEMENT_FUNCTION_KEY,
   EXAMPLE_CODE,
-  GENERATING_LINK_TEXT,
 } from '../../constants';
-import {copySnippetUrlToClipboard, saveJsonToSnippet} from '../../snippet';
 
 export const Editor = ({
   onMount,
@@ -21,9 +17,6 @@ export const Editor = ({
 }) => {
   const worker = useContext(WorkerContext);
   const appProps = useContext(AppContext);
-  const [shareButtonText, setShareButtonText] = useState(
-    COPY_SHAREABLE_LINK_TEXT
-  );
 
   const handleEditorChange = useCallback(
     (value: string | undefined) => {
@@ -48,19 +41,6 @@ export const Editor = ({
       );
     }
   }, [worker]);
-
-  const handleShareClick = async () => {
-    if (appProps) {
-      setShareButtonText(GENERATING_LINK_TEXT);
-      const id = await saveJsonToSnippet(appProps);
-      await copySnippetUrlToClipboard(id).then(() => {
-        setShareButtonText(COPIED_TEXT);
-        setTimeout(() => {
-          setShareButtonText(COPY_SHAREABLE_LINK_TEXT);
-        }, 2000);
-      });
-    }
-  };
 
   const handleClearClick = useCallback(() => {
     if (worker) {
@@ -91,9 +71,6 @@ export const Editor = ({
         <span className="cardTitle">Movement function editor</span>
         <div style={{display: 'flex', gap: '4px'}}>
           <CopyPromptButton />
-          <button disabled={!appProps} onClick={handleShareClick}>
-            {shareButtonText}
-          </button>
           <button
             disabled={appProps?.movementFunctionCode === EXAMPLE_CODE}
             onClick={handleResetCode}

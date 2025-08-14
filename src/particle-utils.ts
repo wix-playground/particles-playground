@@ -1,6 +1,6 @@
-import {BubbleParticle, Particle} from './interfaces';
+import {BubbleParticle, Particle, TextBoundaries} from './interfaces';
 import {BUBBLE_PARTICLE_LIFETIME} from './constants';
-import {getColorFromProgress} from './utils';
+import {getColorFromProgress, getColorFromProgressCyclic} from './utils';
 
 /**
  * Updates the position of a bubble particle with wind effects
@@ -182,7 +182,11 @@ export const drawCircleParticle = ({
   const centerX = Math.floor(particle.x) + particleRadius / 2;
   const centerY = Math.floor(particle.y) + particleRadius / 2;
 
-  context.globalAlpha = particle.opacity || 1;
+  // In static mode, preserve the layer opacity set by the caller
+  // Otherwise, use particle opacity
+  if (!enableStaticMode) {
+    context.globalAlpha = particle.opacity || 1;
+  }
   context.beginPath();
   context.arc(
     centerX,
@@ -336,4 +340,100 @@ export const isParticleAtTarget = (particle: Particle): boolean => {
     particle.x === particle.targetX &&
     particle.y === particle.targetY
   );
+};
+
+/**
+ * Handles static mode particle rendering with gaps, color cycling, and size interpolation for a specific layer
+ */
+export const updateStaticModeLayerParticle = (
+  {
+    particle,
+    elapsedTime,
+    layerIndex,
+    layerOffsetDistance,
+    layerOffsetAngle,
+    particleGap,
+    textBoundaries,
+    interpolationOffset,
+    layerColors,
+    particleColors,
+    animationDuration,
+    sizeInterpolationPercentage,
+    sizeInterpolationMax
+  }: {
+    particle: Particle,
+    elapsedTime: number,
+    layerIndex: number,
+    layerOffsetDistance: number,
+    layerOffsetAngle: number,
+    particleGap: number,
+    textBoundaries: TextBoundaries,
+    interpolationOffset: number,
+    layerColors: string[],
+    particleColors: string[],
+    animationDuration: number,
+    sizeInterpolationPercentage: number,
+    sizeInterpolationMax: number
+  }
+): void => {
+  // Calculate layer offset position
+  const angleRad = (layerOffsetAngle * Math.PI) / 180;
+  const offsetX = Math.cos(angleRad) * layerOffsetDistance * layerIndex;
+  const offsetY = Math.sin(angleRad) * layerOffsetDistance * layerIndex;
+
+  // Position handling: apply gap or use target positions, then add layer offset
+  if (particleGap > 0) {
+    // Apply gap by scaling positions from text center
+    const textCenterX = (textBoundaries.minX + textBoundaries.maxX) / 2;
+    const textCenterY = (textBoundaries.minY + textBoundaries.maxY) / 2;
+
+    // Calculate offset from center
+    const offsetFromCenterX = particle.targetX - textCenterX;
+    const offsetFromCenterY = particle.targetY - textCenterY;
+
+    // Scale the offset to create gaps (1.0 = no gap, higher = larger gaps)
+    const gapScale = 1 + (particleGap / 50);
+
+    particle.x = textCenterX + offsetFromCenterX * gapScale + offsetX;
+    particle.y = textCenterY + offsetFromCenterY * gapScale + offsetY;
+  } else {
+    // No gap: use original target positions with layer offset
+    particle.x = particle.targetX + offsetX;
+    particle.y = particle.targetY + offsetY;
+  }
+
+  // Generate consistent particle-specific offset (0-interpolationOffset ms)
+  const particleHash = (particle.initialX * 9301 + particle.initialY * 49297) % 23;
+  const particleOffset = (particleHash / 23) * interpolationOffset;
+  const offsetElapsedTime = elapsedTime + particleOffset;
+
+  // Color cycling with individual offset
+  // Use layer-specific color if available, otherwise use particle colors
+  if (layerColors.length > layerIndex && layerColors[layerIndex]) {
+    // Use the specific color for this layer
+    particle.color = layerColors[layerIndex];
+  } else if (particleColors.length > 0) {
+    // Use cycling particle colors
+    const colorProgress = (offsetElapsedTime % animationDuration) / animationDuration;
+    particle.color = getColorFromProgressCyclic(particleColors, colorProgress);
+  }
+
+  // Size interpolation for random particles
+  if (sizeInterpolationPercentage > 0) {
+    const randomValue = particleHash / 23; // Normalize to 0-1
+    const shouldInterpolate = randomValue < (sizeInterpolationPercentage / 100);
+
+    if (shouldInterpolate) {
+      // Create a pulsing effect with individual offset: oscillate between 50% and configurable max size
+      const maxScale = sizeInterpolationMax;
+      const minScale = 0.5;
+      const scaleRange = maxScale - minScale;
+      const sizeProgress = Math.sin(offsetElapsedTime * 0.003) * (scaleRange / 2) + (minScale + maxScale) / 2;
+      particle.scale = sizeProgress;
+    } else {
+      particle.scale = 1.0; // Default scale for non-interpolating particles
+    }
+  } else {
+    particle.scale = 1.0; // Default scale when interpolation is disabled
+  }
 };
