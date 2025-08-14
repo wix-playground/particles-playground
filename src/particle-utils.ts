@@ -132,6 +132,17 @@ export const drawImageParticle = ({
   particleRadius: number;
   imageBitmap: ImageBitmap;
 }): void => {
+  const scale = particle.scale || 1;
+  const scaledRadius = Math.floor(particleRadius * scale);
+
+  // Keep the center point constant regardless of scale
+  const centerX = Math.floor(particle.x) + particleRadius / 2;
+  const centerY = Math.floor(particle.y) + particleRadius / 2;
+
+  // Scale image from center
+  const imageX = centerX - scaledRadius / 2;
+  const imageY = centerY - scaledRadius / 2;
+
   context.globalAlpha = particle.opacity || 1;
   context.drawImage(
     imageBitmap,
@@ -139,10 +150,10 @@ export const drawImageParticle = ({
     particle.targetY,
     particleRadius,
     particleRadius,
-    Math.floor(particle.x),
-    Math.floor(particle.y),
-    particleRadius,
-    particleRadius
+    imageX,
+    imageY,
+    scaledRadius,
+    scaledRadius
   );
 };
 
@@ -155,27 +166,38 @@ export const drawCircleParticle = ({
   particleRadius,
   particleColors,
   revealProgress,
+  enableStaticMode = false,
 }: {
   particle: Particle;
   context: OffscreenCanvasRenderingContext2D;
   particleRadius: number;
   particleColors: string[];
   revealProgress: number;
+  enableStaticMode?: boolean;
 }): void => {
-  const radius = Math.floor(particleRadius * (particle.scale || 1));
+  const scale = particle.scale || 1;
+  const scaledRadius = Math.floor(particleRadius * scale);
+
+  // Keep the center point constant regardless of scale
+  const centerX = Math.floor(particle.x) + particleRadius / 2;
+  const centerY = Math.floor(particle.y) + particleRadius / 2;
 
   context.globalAlpha = particle.opacity || 1;
   context.beginPath();
   context.arc(
-    Math.floor(particle.x) + radius / 2,
-    Math.floor(particle.y) + radius / 2,
-    radius / 2,
+    centerX,
+    centerY,
+    scaledRadius / 2,
     0,
     2 * Math.PI
   );
-  context.fillStyle = particleColors.length
-    ? getColorFromProgress(particleColors, revealProgress)
-    : particle.color;
+  // In static mode, use particle.color directly (already cycled)
+  // Otherwise use existing logic
+  context.fillStyle = enableStaticMode && particle.color
+    ? particle.color
+    : (particleColors.length
+      ? getColorFromProgress(particleColors, revealProgress)
+      : particle.color);
   context.fill();
 };
 
@@ -199,35 +221,47 @@ export const drawBlendedParticle = ({
   revealProgress: number;
   imageBitmap: ImageBitmap;
 }): void => {
-  const radius = Math.floor(particleRadius * (particle.scale || 1));
+  const scale = particle.scale || 1;
+  const scaledRadius = Math.floor(particleRadius * scale);
+
+  // Keep the center point constant regardless of scale
+  const centerX = Math.floor(particle.x) + particleRadius / 2;
+  const centerY = Math.floor(particle.y) + particleRadius / 2;
 
   // Draw circle with reduced opacity
   context.globalAlpha = (particle.opacity || 1) * (1 - blendFactor);
   context.beginPath();
   context.arc(
-    Math.floor(particle.x) + radius / 2,
-    Math.floor(particle.y) + radius / 2,
-    radius / 2,
+    centerX,
+    centerY,
+    scaledRadius / 2,
     0,
     2 * Math.PI
   );
-  context.fillStyle = particleColors.length
-    ? getColorFromProgress(particleColors, revealProgress)
-    : particle.color;
+  context.fillStyle = particle.color
+    ? particle.color
+    : (particleColors.length
+      ? getColorFromProgress(particleColors, revealProgress)
+      : particle.color);
   context.fill();
 
   // Draw image with increasing opacity
   context.globalAlpha = blendFactor;
+
+  // Scale image from center
+  const imageX = centerX - scaledRadius / 2;
+  const imageY = centerY - scaledRadius / 2;
+
   context.drawImage(
     imageBitmap,
     particle.targetX,
     particle.targetY,
     particleRadius,
     particleRadius,
-    Math.floor(particle.x),
-    Math.floor(particle.y),
-    particleRadius,
-    particleRadius
+    imageX,
+    imageY,
+    scaledRadius,
+    scaledRadius
   );
 };
 
@@ -242,6 +276,7 @@ export const drawParticle = ({
   revealProgress,
   imageBitmap,
   enableImageParticles,
+  enableStaticMode = false,
 }: {
   particle: Particle;
   context: OffscreenCanvasRenderingContext2D;
@@ -250,8 +285,19 @@ export const drawParticle = ({
   revealProgress: number;
   imageBitmap: ImageBitmap;
   enableImageParticles: boolean;
+  enableStaticMode?: boolean;
 }): void => {
-  if (enableImageParticles) {
+  if (enableStaticMode) {
+    // Static mode: always render as circles, never blend or use images
+    drawCircleParticle({
+      particle,
+      context,
+      particleRadius,
+      particleColors,
+      revealProgress,
+      enableStaticMode,
+    });
+  } else if (enableImageParticles) {
     // Always render as image bitmap throughout animation
     drawImageParticle({particle, context, particleRadius, imageBitmap});
   } else {
@@ -279,6 +325,7 @@ export const drawParticle = ({
         particleRadius,
         particleColors,
         revealProgress,
+        enableStaticMode,
       });
     }
   }

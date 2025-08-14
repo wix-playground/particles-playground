@@ -5,6 +5,11 @@ export const DEFAULT_ANIMATION_DURATION = 3000; // 3 seconds in milliseconds
 export const DEFAULT_DELAY = 0; // 0 seconds in milliseconds
 export const DEFAULT_ENABLE_BUBBLES = false; // Default setting for bubble emission
 export const DEFAULT_ENABLE_IMAGE_PARTICLES = false; // Default setting for image particle rendering
+export const DEFAULT_ENABLE_STATIC_MODE = false; // Default setting for static rendering mode
+export const DEFAULT_PARTICLE_GAP = 0; // Default gap between particles in static mode (in pixels)
+export const DEFAULT_SIZE_INTERPOLATION_PERCENTAGE = 0; // Default percentage of particles that should interpolate size (0-100%)
+export const DEFAULT_INTERPOLATION_OFFSET = 400; // Default maximum offset for staggered animations (in milliseconds)
+export const DEFAULT_SIZE_INTERPOLATION_MAX = 1.5; // Default maximum scale during size interpolation (1.0 = original size)
 export const DEFAULT_START_POSITION: StartPositionType = 'random';
 export const DEFAULT_MOVEMENT_FUNCTION_KEY = 'DEV_EXAMPLE';
 export const DEFAULT_PARTICLES_TEXT = 'WIX 🤠';
@@ -130,6 +135,11 @@ export const DATA_TEST_IDS = {
     FONT_ITALIC_CHECKBOX: 'font-italic-checkbox',
     TEXT_INPUT: 'text-input',
     TEXT_COLOR_INPUT: 'text-color-input',
+    STATIC_MODE_TOGGLE: 'static-mode-toggle',
+    PARTICLE_GAP_SLIDER: 'particle-gap-slider',
+    SIZE_INTERPOLATION_SLIDER: 'size-interpolation-slider',
+    INTERPOLATION_OFFSET_SLIDER: 'interpolation-offset-slider',
+    SIZE_INTERPOLATION_MAX_SLIDER: 'size-interpolation-max-slider',
 }
 
 export const BUBBLE_PARTICLE_LIFETIME = 1300
