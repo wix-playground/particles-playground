@@ -46,8 +46,13 @@ export const ParticleSettings: React.FC = () => {
       </div>
 
       <div className={styles['setting-row']}>
-        <BubbleEffectToggle />
-        <ImageParticleToggle />
+        {/* Hide bubble and image particle toggles when static mode is enabled */}
+        {!appProps.enableStaticMode && (
+          <>
+            <BubbleEffectToggle />
+            <ImageParticleToggle />
+          </>
+        )}
         <StaticModeToggle />
       </div>
 

@@ -174,10 +174,12 @@ const App = () => {
               </div>
             </div>
 
-            {/* Editor Section */}
-            <div className={styles['editor-section']}>
-              <Editor onMount={handleEditorDidMount} />
-            </div>
+            {/* Editor Section - Hide when static mode is enabled */}
+            {!appProps?.enableStaticMode && (
+              <div className={styles['editor-section']}>
+                <Editor onMount={handleEditorDidMount} />
+              </div>
+            )}
 
           </div>
         </div>
