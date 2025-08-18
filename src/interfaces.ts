@@ -70,6 +70,11 @@ export enum Action {
   UPDATE_SIZE_INTERPOLATION_PERCENTAGE = 'UPDATE_SIZE_INTERPOLATION_PERCENTAGE',
   UPDATE_INTERPOLATION_OFFSET = 'UPDATE_INTERPOLATION_OFFSET',
   UPDATE_SIZE_INTERPOLATION_MAX = 'UPDATE_SIZE_INTERPOLATION_MAX',
+  UPDATE_LAYER_COUNT = 'UPDATE_LAYER_COUNT',
+  UPDATE_LAYER_OFFSET_DISTANCE = 'UPDATE_LAYER_OFFSET_DISTANCE',
+  UPDATE_LAYER_OFFSET_ANGLE = 'UPDATE_LAYER_OFFSET_ANGLE',
+  UPDATE_LAYER_OPACITY_DECAY = 'UPDATE_LAYER_OPACITY_DECAY',
+  UPDATE_LAYER_COLORS = 'UPDATE_LAYER_COLORS',
 }
 
 export enum WorkerAction {
@@ -186,6 +191,31 @@ export const getUpdateSizeInterpolationMaxMessage = (payload: number) => ({
   payload,
 });
 
+export const getUpdateLayerCountMessage = (payload: number) => ({
+  type: Action.UPDATE_LAYER_COUNT as const,
+  payload,
+});
+
+export const getUpdateLayerOffsetDistanceMessage = (payload: number) => ({
+  type: Action.UPDATE_LAYER_OFFSET_DISTANCE as const,
+  payload,
+});
+
+export const getUpdateLayerOffsetAngleMessage = (payload: number) => ({
+  type: Action.UPDATE_LAYER_OFFSET_ANGLE as const,
+  payload,
+});
+
+export const getUpdateLayerOpacityDecayMessage = (payload: number) => ({
+  type: Action.UPDATE_LAYER_OPACITY_DECAY as const,
+  payload,
+});
+
+export const getUpdateLayerColorsMessage = (payload: string[]) => ({
+  type: Action.UPDATE_LAYER_COLORS as const,
+  payload,
+});
+
 export const getUpdateSelectedEffectMessage = (payload: EffectType | null) => ({
   type: Action.UPDATE_SELECTED_EFFECT as const,
   payload,
@@ -219,7 +249,12 @@ export type MainThreadMessage =
   | ReturnType<typeof getUpdateParticleGapMessage>
   | ReturnType<typeof getUpdateSizeInterpolationPercentageMessage>
   | ReturnType<typeof getUpdateInterpolationOffsetMessage>
-  | ReturnType<typeof getUpdateSizeInterpolationMaxMessage>;
+  | ReturnType<typeof getUpdateSizeInterpolationMaxMessage>
+  | ReturnType<typeof getUpdateLayerCountMessage>
+  | ReturnType<typeof getUpdateLayerOffsetDistanceMessage>
+  | ReturnType<typeof getUpdateLayerOffsetAngleMessage>
+  | ReturnType<typeof getUpdateLayerOpacityDecayMessage>
+  | ReturnType<typeof getUpdateLayerColorsMessage>;
 
 export const fontFamilies = [
   'Arial',
@@ -269,6 +304,11 @@ export interface AppProps {
   sizeInterpolationPercentage: number;
   interpolationOffset: number;
   sizeInterpolationMax: number;
+  layerCount: number;
+  layerOffsetDistance: number;
+  layerOffsetAngle: number;
+  layerOpacityDecay: number;
+  layerColors: string[]; // Array of colors for each layer (empty array means use default particle colors)
 }
 
 export type TextBoundaries = Dimensions & {

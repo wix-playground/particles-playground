@@ -10,6 +10,11 @@ export const DEFAULT_PARTICLE_GAP = 0; // Default gap between particles in stati
 export const DEFAULT_SIZE_INTERPOLATION_PERCENTAGE = 0; // Default percentage of particles that should interpolate size (0-100%)
 export const DEFAULT_INTERPOLATION_OFFSET = 400; // Default maximum offset for staggered animations (in milliseconds)
 export const DEFAULT_SIZE_INTERPOLATION_MAX = 1.5; // Default maximum scale during size interpolation (1.0 = original size)
+export const DEFAULT_LAYER_COUNT = 1; // Default number of layers (1-5)
+export const DEFAULT_LAYER_OFFSET_DISTANCE = 5; // Default distance between layers in pixels
+export const DEFAULT_LAYER_OFFSET_ANGLE = 225; // Default direction angle in degrees (bottom-right shadow)
+export const DEFAULT_LAYER_OPACITY_DECAY = 0.3; // Default opacity reduction per layer (0.1-0.9)
+export const DEFAULT_LAYER_COLORS: string[] = []; // Default layer colors (empty array means use particle colors)
 export const DEFAULT_START_POSITION: StartPositionType = 'random';
 export const DEFAULT_MOVEMENT_FUNCTION_KEY = 'DEV_EXAMPLE';
 export const DEFAULT_PARTICLES_TEXT = 'WIX 🤠';
@@ -91,7 +96,7 @@ return (() => {
         * Write your movement animation code here to incrementally update particle position.
         * The particle is mutable here so you can add whatever properties you need to achieve your animation.
         */
-    
+
         // Helper function for getting new position value.
         const getUpdatedPosition = (currentPosition, targetPosition, delta) => {
             const distance = Math.abs(currentPosition - targetPosition)
@@ -101,14 +106,14 @@ return (() => {
                 return currentPosition < targetPosition ? currentPosition + delta : currentPosition - delta
             }
         }
-    
+
         // Elapsed time since the start of the animation.
         const totalElapsedTime = currentTime - animationStartTime
-    
+
         const initialDelta = 1
         // After 1 second, the particles will move twice as fast.
         const delta = totalElapsedTime < 1000 ? initialDelta : initialDelta * 2
-    
+
         // To keep the example simple, particle coordinates are updated by delta until target coordinates are reached.
         particle.x = getUpdatedPosition(particle.x, particle.targetX, delta)
         particle.y = getUpdatedPosition(particle.y, particle.targetY, delta)
@@ -125,7 +130,7 @@ Write a new particle movement function following the same contract as the exampl
 * You may extend the particle object with additional properties needed for your effect.
 
 ${EXAMPLE_CODE}`
-;
+    ;
 
 export const DATA_TEST_IDS = {
     FONT_FAMILY_SELECT: 'font-family-select',

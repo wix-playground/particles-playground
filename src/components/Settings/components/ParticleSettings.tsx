@@ -9,6 +9,11 @@ import {ParticleGapSlider} from '../ParticleGapSlider';
 import {SizeInterpolationSlider} from '../SizeInterpolationSlider';
 import {InterpolationOffsetSlider} from '../InterpolationOffsetSlider';
 import {SizeInterpolationMaxSlider} from '../SizeInterpolationMaxSlider';
+import {LayerCountSlider} from '../LayerCountSlider';
+import {LayerOffsetDistanceSlider} from '../LayerOffsetDistanceSlider';
+import {LayerOffsetAngleSlider} from '../LayerOffsetAngleSlider';
+import {LayerOpacityDecaySlider} from '../LayerOpacityDecaySlider';
+import {LayerColorSelector} from '../LayerColorSelector';
 import styles from '../Settings.module.css';
 
 export const ParticleSettings: React.FC = () => {
@@ -67,6 +72,19 @@ export const ParticleSettings: React.FC = () => {
             <SizeInterpolationMaxSlider />
             <InterpolationOffsetSlider />
           </div>
+
+          {/* Multi-layer controls */}
+          <div className={styles['setting-row']}>
+            <LayerCountSlider />
+            <LayerOffsetDistanceSlider />
+          </div>
+          <div className={styles['setting-row']}>
+            <LayerOffsetAngleSlider />
+            <LayerOpacityDecaySlider />
+          </div>
+
+          {/* Layer color selector - only show when multiple layers */}
+          <LayerColorSelector />
         </>
       )}
     </div>
